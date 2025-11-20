@@ -109,28 +109,89 @@
 
     .checkbox-list {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px 16px;
+      flex-direction: column;
+      gap: 12px;
       background: var(--card-alt);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 12px;
-      max-height: 200px;
+      padding: 16px;
+      max-height: 320px;
       overflow-y: auto;
     }
 
     .checkbox-item {
-      display: inline-flex;
+      display: flex;
+      gap: 12px;
+      padding: 12px;
+      border: 1px solid rgba(15, 155, 156, 0.12);
+      border-radius: 12px;
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(15, 41, 36, 0.08);
+    }
+
+    .checkbox-item.checkbox-all {
       align-items: center;
-      gap: 6px;
-      font-size: 0.9rem;
-      color: var(--text);
+      justify-content: start;
+      font-weight: 600;
+      gap: 10px;
     }
 
     .checkbox-item input {
       accent-color: var(--accent);
-      width: 16px;
-      height: 16px;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+      margin-top: 4px;
+    }
+
+    .checkbox-meta {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      width: 100%;
+    }
+
+    .benef-primary {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.95rem;
+      color: var(--text);
+    }
+
+    .benef-primary span {
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .benef-metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 4px 12px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .benef-metrics strong {
+      color: var(--text);
+    }
+
+    .data-context {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin: 8px 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .data-context::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: inline-block;
     }
 
     .field {
@@ -356,6 +417,7 @@
         <strong id="diffValue">0 kWh</strong>
         <p id="diffLegend">Nenhum filtro aplicado</p>
       </div>
+          <p class="data-context" data-benef-usage>Selecione beneficiários para visualizar os dados.</p>
       <div class="section-title">
         <span>02</span>
         <div>Distribuição mensal</div>
@@ -363,6 +425,7 @@
       <div class="chart-container">
         <canvas id="energiaChart" aria-label="Gráfico contratado vs recebido" role="img"></canvas>
       </div>
+          <p class="data-context" data-benef-usage>Selecione beneficiários para visualizar os dados.</p>
     </section>
 
     <section>
@@ -370,9 +433,11 @@
         <span>03</span>
         <div>Insights-chave (12 meses)</div>
       </div>
+          <p class="data-context" data-benef-usage>Selecione beneficiários para visualizar os dados.</p>
       <div class="insights-grid" id="insightsGrid">
         <!-- preenchido via JS -->
       </div>
+          <p class="data-context" data-benef-usage>Selecione beneficiários para visualizar os dados.</p>
       <div class="table-wrapper">
         <table>
           <thead>
@@ -380,7 +445,7 @@
               <th>Mês/Ano</th>
               <th>Instalação</th>
               <th>Beneficiário</th>
-              <th>kWh contratado</th>
+                      <th>kWh contratado</th>
               <th>kWh recebido</th>
               <th>Diferença</th>
               <th>Mensalidade (R$)</th>
@@ -398,7 +463,8 @@
   </main>
 
   <script>
-    const rawData = [{"ano":2024,"semestre":"Semestre_1_2024","mes_ano":"2024-01-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":7091,"edp_dif_recebidos_x_contratado":596},{"ano":2024,"semestre":"Semestre_1_2024","mes_ano":"2024-02-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":6476,"edp_dif_recebidos_x_contratado":-19},{"ano":2024,"semestre":"Semestre_1_2024","mes_ano":"2024-03-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":8502,"edp_dif_recebidos_x_contratado":2007},{"ano":2024,"semestre":"Semestre_1_2024","mes_ano":"2024-04-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":7527,"edp_dif_recebidos_x_contratado":1032},{"ano":2024,"semestre":"Semestre_1_2024","mes_ano":"2024-05-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":6474,"edp_dif_recebidos_x_contratado":-21},{"ano":2024,"semestre":"Semestre_1_2024","mes_ano":"2024-06-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":5238,"edp_dif_recebidos_x_contratado":-1257},{"ano":2024,"semestre":"Semestre_2_2024","mes_ano":"2024-07-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":5506,"edp_dif_recebidos_x_contratado":-989},{"ano":2024,"semestre":"Semestre_2_2024","mes_ano":"2024-08-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":6094,"edp_dif_recebidos_x_contratado":-401},{"ano":2024,"semestre":"Semestre_2_2024","mes_ano":"2024-09-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":6334,"edp_dif_recebidos_x_contratado":-161},{"ano":2024,"semestre":"Semestre_2_2024","mes_ano":"2024-10-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":5648,"edp_dif_recebidos_x_contratado":-847}];
+    const rawData = [{"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-01-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 2314, "edp_dif_recebidos_x_contratado": 264.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-01-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 7091, "edp_dif_recebidos_x_contratado": 596.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-01-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 4643, "edp_dif_recebidos_x_contratado": 4143.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-01-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1503, "edp_dif_recebidos_x_contratado": 148.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-01-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 8904, "edp_dif_recebidos_x_contratado": 404.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-01-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 4113, "edp_dif_recebidos_x_contratado": 333.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-01-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 2240, "edp_dif_recebidos_x_contratado": 164.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-01-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 1194, "edp_dif_recebidos_x_contratado": 104.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-02-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 2113, "edp_dif_recebidos_x_contratado": 63.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-02-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 6476, "edp_dif_recebidos_x_contratado": -19.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-02-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 4241, "edp_dif_recebidos_x_contratado": 3741.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-02-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1373, "edp_dif_recebidos_x_contratado": 18.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-02-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 10596, "edp_dif_recebidos_x_contratado": 3296.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-02-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 8132, "edp_dif_recebidos_x_contratado": -368.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-02-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3756, "edp_dif_recebidos_x_contratado": -24.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-02-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 2046, "edp_dif_recebidos_x_contratado": -30.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-02-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 1090, "edp_dif_recebidos_x_contratado": 0.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-03-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 2775, "edp_dif_recebidos_x_contratado": 725.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-03-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 8502, "edp_dif_recebidos_x_contratado": 2007.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-03-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 5567, "edp_dif_recebidos_x_contratado": 5067.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-03-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1802, "edp_dif_recebidos_x_contratado": 447.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-03-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 13910, "edp_dif_recebidos_x_contratado": 6610.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-03-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 10676, "edp_dif_recebidos_x_contratado": 2176.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-03-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 4931, "edp_dif_recebidos_x_contratado": 1151.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-03-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 2686, "edp_dif_recebidos_x_contratado": 610.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-03-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 1431, "edp_dif_recebidos_x_contratado": 341.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-04-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 2456, "edp_dif_recebidos_x_contratado": 406.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-04-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 7527, "edp_dif_recebidos_x_contratado": 1032.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-04-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 4929, "edp_dif_recebidos_x_contratado": 4429.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-04-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1596, "edp_dif_recebidos_x_contratado": 241.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-04-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 12315, "edp_dif_recebidos_x_contratado": 5015.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-04-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 9452, "edp_dif_recebidos_x_contratado": 952.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-04-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 4366, "edp_dif_recebidos_x_contratado": 586.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-04-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 2378, "edp_dif_recebidos_x_contratado": 302.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-04-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 1267, "edp_dif_recebidos_x_contratado": 177.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-05-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 2039, "edp_dif_recebidos_x_contratado": -11.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-05-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 6474, "edp_dif_recebidos_x_contratado": -21.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-05-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 494, "edp_dif_recebidos_x_contratado": -6.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-05-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1344, "edp_dif_recebidos_x_contratado": -11.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-05-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 7277, "edp_dif_recebidos_x_contratado": -23.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-05-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 8467, "edp_dif_recebidos_x_contratado": -33.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-05-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3770, "edp_dif_recebidos_x_contratado": -10.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-05-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 2070, "edp_dif_recebidos_x_contratado": -6.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-05-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 1081, "edp_dif_recebidos_x_contratado": -9.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-06-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1660, "edp_dif_recebidos_x_contratado": -390.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-06-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 5238, "edp_dif_recebidos_x_contratado": -1257.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-06-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 399, "edp_dif_recebidos_x_contratado": -101.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-06-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1094, "edp_dif_recebidos_x_contratado": -261.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-06-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 5895, "edp_dif_recebidos_x_contratado": -1405.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-06-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 6860, "edp_dif_recebidos_x_contratado": -1640.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-06-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3050, "edp_dif_recebidos_x_contratado": -730.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-06-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 1673, "edp_dif_recebidos_x_contratado": -403.0}, {"ano": 2024, "semestre": "Semestre_1_2024", "mes_ano": "2024-06-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 875, "edp_dif_recebidos_x_contratado": -215.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-07-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1745, "edp_dif_recebidos_x_contratado": -305.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-07-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 5506, "edp_dif_recebidos_x_contratado": -989.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-07-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 419, "edp_dif_recebidos_x_contratado": -81.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-07-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1150, "edp_dif_recebidos_x_contratado": -205.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-07-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 6197, "edp_dif_recebidos_x_contratado": -1103.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-07-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 7211, "edp_dif_recebidos_x_contratado": -1289.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-07-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3206, "edp_dif_recebidos_x_contratado": -574.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-07-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 1758, "edp_dif_recebidos_x_contratado": -318.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-07-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 920, "edp_dif_recebidos_x_contratado": -170.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-08-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1931, "edp_dif_recebidos_x_contratado": -119.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-08-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 6094, "edp_dif_recebidos_x_contratado": -401.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-08-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 464, "edp_dif_recebidos_x_contratado": -36.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-08-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1272, "edp_dif_recebidos_x_contratado": -83.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-08-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 6858, "edp_dif_recebidos_x_contratado": -442.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-08-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 7981, "edp_dif_recebidos_x_contratado": -519.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-08-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3548, "edp_dif_recebidos_x_contratado": -232.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-08-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 1946, "edp_dif_recebidos_x_contratado": -130.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-08-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 1018, "edp_dif_recebidos_x_contratado": -72.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-09-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 7122, "edp_dif_recebidos_x_contratado": -178.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-09-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 8281, "edp_dif_recebidos_x_contratado": -219.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-09-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3692, "edp_dif_recebidos_x_contratado": -88.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-09-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 2024, "edp_dif_recebidos_x_contratado": -52.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-09-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 1066, "edp_dif_recebidos_x_contratado": -24.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-09-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 6334, "edp_dif_recebidos_x_contratado": -161.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-09-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 494, "edp_dif_recebidos_x_contratado": -6.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-09-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1313, "edp_dif_recebidos_x_contratado": -42.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-09-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1993, "edp_dif_recebidos_x_contratado": -57.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-10-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 6356, "edp_dif_recebidos_x_contratado": -944.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-10-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 7397, "edp_dif_recebidos_x_contratado": -1103.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-10-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3289, "edp_dif_recebidos_x_contratado": -491.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-10-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 1804, "edp_dif_recebidos_x_contratado": -272.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-10-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 943, "edp_dif_recebidos_x_contratado": -147.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-10-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1790, "edp_dif_recebidos_x_contratado": -260.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-10-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 5648, "edp_dif_recebidos_x_contratado": -847.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-10-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 430, "edp_dif_recebidos_x_contratado": -70.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-10-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1179, "edp_dif_recebidos_x_contratado": -176.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-11-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1471, "edp_dif_recebidos_x_contratado": -579.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-11-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 4641, "edp_dif_recebidos_x_contratado": -1854.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-11-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 353, "edp_dif_recebidos_x_contratado": -147.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-11-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 969, "edp_dif_recebidos_x_contratado": -386.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-11-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 5222, "edp_dif_recebidos_x_contratado": -2078.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-11-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 6078, "edp_dif_recebidos_x_contratado": -2422.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-11-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 2702, "edp_dif_recebidos_x_contratado": -1078.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-11-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 1482, "edp_dif_recebidos_x_contratado": -594.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-11-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 775, "edp_dif_recebidos_x_contratado": -315.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-03-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 2298, "edp_dif_recebidos_x_contratado": 248.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-03-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 7263, "edp_dif_recebidos_x_contratado": 768.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-03-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 553, "edp_dif_recebidos_x_contratado": 53.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-03-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1509, "edp_dif_recebidos_x_contratado": 154.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-03-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 8169, "edp_dif_recebidos_x_contratado": 869.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-03-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 9511, "edp_dif_recebidos_x_contratado": 1011.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-03-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 4227, "edp_dif_recebidos_x_contratado": 447.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-03-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 2315, "edp_dif_recebidos_x_contratado": 239.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-03-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 1224, "edp_dif_recebidos_x_contratado": 134.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-02-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 2122, "edp_dif_recebidos_x_contratado": 72.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-02-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 6719, "edp_dif_recebidos_x_contratado": 224.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-02-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 510, "edp_dif_recebidos_x_contratado": 10.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-02-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1404, "edp_dif_recebidos_x_contratado": 49.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-02-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 7565, "edp_dif_recebidos_x_contratado": 265.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-02-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 8809, "edp_dif_recebidos_x_contratado": 309.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-02-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3910, "edp_dif_recebidos_x_contratado": 130.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-02-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 2154, "edp_dif_recebidos_x_contratado": 78.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-02-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 1133, "edp_dif_recebidos_x_contratado": 43.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-01-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1828, "edp_dif_recebidos_x_contratado": -222.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-01-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 5787, "edp_dif_recebidos_x_contratado": -708.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-01-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 439, "edp_dif_recebidos_x_contratado": -61.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-01-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1209, "edp_dif_recebidos_x_contratado": -146.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-01-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 6516, "edp_dif_recebidos_x_contratado": -784.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-01-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 7588, "edp_dif_recebidos_x_contratado": -912.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-01-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3368, "edp_dif_recebidos_x_contratado": -412.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-01-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 1855, "edp_dif_recebidos_x_contratado": -221.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-01-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 976, "edp_dif_recebidos_x_contratado": -114.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-12-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1950, "edp_dif_recebidos_x_contratado": -100.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-12-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 6191, "edp_dif_recebidos_x_contratado": -304.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-12-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 472, "edp_dif_recebidos_x_contratado": -28.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-12-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1285, "edp_dif_recebidos_x_contratado": -70.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-12-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 6959, "edp_dif_recebidos_x_contratado": -341.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-12-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 8097, "edp_dif_recebidos_x_contratado": -403.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-12-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3605, "edp_dif_recebidos_x_contratado": -175.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-12-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 1979, "edp_dif_recebidos_x_contratado": -97.0}, {"ano": 2024, "semestre": "Semestre_2_2024", "mes_ano": "2024-12-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 1034, "edp_dif_recebidos_x_contratado": -56.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-04-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 951, "edp_dif_recebidos_x_contratado": -139.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-04-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1784, "edp_dif_recebidos_x_contratado": -266.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-04-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 6344, "edp_dif_recebidos_x_contratado": -956.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-04-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 429, "edp_dif_recebidos_x_contratado": -71.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-04-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3283, "edp_dif_recebidos_x_contratado": -497.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-04-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 5641, "edp_dif_recebidos_x_contratado": -854.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-04-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 1797, "edp_dif_recebidos_x_contratado": -279.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-04-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 7387, "edp_dif_recebidos_x_contratado": -1113.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-04-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1172, "edp_dif_recebidos_x_contratado": -183.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-05-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1602, "edp_dif_recebidos_x_contratado": -448.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-05-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 386, "edp_dif_recebidos_x_contratado": -114.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-05-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 5066, "edp_dif_recebidos_x_contratado": -1429.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-05-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1053, "edp_dif_recebidos_x_contratado": -302.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-05-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 6634, "edp_dif_recebidos_x_contratado": -1866.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-05-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 1614, "edp_dif_recebidos_x_contratado": -462.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-05-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 854, "edp_dif_recebidos_x_contratado": -236.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-05-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 2948, "edp_dif_recebidos_x_contratado": -832.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-05-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 5697, "edp_dif_recebidos_x_contratado": -1603.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-06-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 7115, "edp_dif_recebidos_x_contratado": -1385.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-06-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 5434, "edp_dif_recebidos_x_contratado": -1061.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-06-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1129, "edp_dif_recebidos_x_contratado": -226.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-06-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 1731, "edp_dif_recebidos_x_contratado": -345.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-06-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 916, "edp_dif_recebidos_x_contratado": -174.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-06-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 6111, "edp_dif_recebidos_x_contratado": -1189.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-06-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3162, "edp_dif_recebidos_x_contratado": -618.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-06-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 414, "edp_dif_recebidos_x_contratado": -86.0}, {"ano": 2025, "semestre": "Semestre_1_2025", "mes_ano": "2025-06-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1719, "edp_dif_recebidos_x_contratado": -331.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-07-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 430, "edp_dif_recebidos_x_contratado": -70.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-07-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1789, "edp_dif_recebidos_x_contratado": -261.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-07-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3291, "edp_dif_recebidos_x_contratado": -489.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-07-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 6360, "edp_dif_recebidos_x_contratado": -940.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-07-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 7404, "edp_dif_recebidos_x_contratado": -1096.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-07-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 5654, "edp_dif_recebidos_x_contratado": -841.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-07-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1175, "edp_dif_recebidos_x_contratado": -180.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-07-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 1802, "edp_dif_recebidos_x_contratado": -274.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-07-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 953, "edp_dif_recebidos_x_contratado": -137.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-08-01", "instalacao": "506279", "cpf_cnpj_beneficiario": "39275789000129", "nome_beneficiario": "PIZZARIA D´AMPEZZO LTDA", "kWhDisponibilizadosMes": 2050.0, "valorMensalidade": 2133.72, "edp_total_kwh": 1904, "edp_dif_recebidos_x_contratado": -146.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-08-01", "instalacao": "506281", "cpf_cnpj_beneficiario": "27320134000146", "nome_beneficiario": "BAR E RESTAURANTE PIRAO LTDA ME", "kWhDisponibilizadosMes": 6495.0, "valorMensalidade": 6574.0, "edp_total_kwh": 6020, "edp_dif_recebidos_x_contratado": -475.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-08-01", "instalacao": "596654", "cpf_cnpj_beneficiario": "36224796000103", "nome_beneficiario": "UGO RESTAURANTE LTDA", "kWhDisponibilizadosMes": 500.0, "valorMensalidade": 459.38, "edp_total_kwh": 458, "edp_dif_recebidos_x_contratado": -42.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-08-01", "instalacao": "634374", "cpf_cnpj_beneficiario": "07688213000105", "nome_beneficiario": "SCM-COMERCIO DE PRESENTES LTDA", "kWhDisponibilizadosMes": 1355.0, "valorMensalidade": 1396.21, "edp_total_kwh": 1251, "edp_dif_recebidos_x_contratado": -104.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-08-01", "instalacao": "1485359", "cpf_cnpj_beneficiario": "52805088000112", "nome_beneficiario": "BALTHAZAR RESTAURANTE E COMERCIO DE BEBIDAS LTDA", "kWhDisponibilizadosMes": 7300.0, "valorMensalidade": 7295.02, "edp_total_kwh": 6770, "edp_dif_recebidos_x_contratado": -530.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-08-01", "instalacao": "1506204", "cpf_cnpj_beneficiario": "16642060000148", "nome_beneficiario": "RESTAURANTE CANTO DA PRAIA LTDA ME", "kWhDisponibilizadosMes": 8500.0, "valorMensalidade": 8276.88, "edp_total_kwh": 7883, "edp_dif_recebidos_x_contratado": -617.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-08-01", "instalacao": "1921756", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 3780.0, "valorMensalidade": 3809.72, "edp_total_kwh": 3503, "edp_dif_recebidos_x_contratado": -277.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-08-01", "instalacao": "1921762", "cpf_cnpj_beneficiario": "02016402792", "nome_beneficiario": "GEDALIAS ROSA", "kWhDisponibilizadosMes": 2076.0, "valorMensalidade": 2076.03, "edp_total_kwh": 1918, "edp_dif_recebidos_x_contratado": -158.0}, {"ano": 2025, "semestre": "Semestre_2_2025", "mes_ano": "2025-08-01", "instalacao": "1990889", "cpf_cnpj_beneficiario": "39741461000150", "nome_beneficiario": "DELTA HOLDING DE PARTICIPACOES E SERVICOS LTDA", "kWhDisponibilizadosMes": 1090.0, "valorMensalidade": 1101.9, "edp_total_kwh": 1014, "edp_dif_recebidos_x_contratado": -76.0}]
+
 
     const filtersForm = document.getElementById('filters');
     const diffCard = document.getElementById('diffCard');
@@ -407,18 +473,37 @@
     const tableBody = document.getElementById('tableBody');
     const emptyState = document.getElementById('emptyState');
     const insightsGrid = document.getElementById('insightsGrid');
+    const instalacoesIndicator = document.getElementById('instalacoesIndicator');
+    const benefFilterContainer = document.getElementById('benefFilter');
+    const benefUsageIndicators = document.querySelectorAll('[data-benef-usage]');
 
     const selectElements = {
       ano: document.getElementById('anoFilter'),
       semestre: document.getElementById('semestreFilter'),
       mes: document.getElementById('mesFilter'),
-      instalacao: document.getElementById('instalacaoFilter'),
-      beneficiario: document.getElementById('benefFilter')
+      instalacao: document.getElementById('instalacaoFilter')
     };
 
     const monthFormatter = new Intl.DateTimeFormat('pt-BR', { month: 'short', year: 'numeric' });
     const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
     const numberFormatter = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
+    const currencyPerKwhFormatter = new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
+
+
+    let energiaChart = null;
+    let beneficiariosList = [];
+    let selectedBeneficiarios = new Set();
+    let benefProfiles = [];
+
+    function updateInstalacoesIndicator(data) {
+      const total = new Set(data.map(item => item.instalacao)).size;
+      instalacoesIndicator.textContent = `Instalações monitoradas: ${total}`;
+    }
 
     function populateFilters(data) {
       const sets = {
@@ -442,11 +527,19 @@
       populateSelect(selectElements.ano, Array.from(sets.ano).sort());
       populateSelect(selectElements.semestre, Array.from(sets.semestre).sort());
       populateSelect(selectElements.mes, sortedMes, formatMesLabel);
-      populateSelect(selectElements.instalacao, Array.from(sets.instalacao).sort());
-      populateSelect(selectElements.beneficiario, Array.from(sets.beneficiario).sort());
+      populateSelect(selectElements.instalacao, Array.from(sets.instalacao).sort(), undefined, 'Todas');
+
+      benefProfiles = buildBeneficiaryProfiles(data);
+      populateBenefCheckboxes(benefProfiles);
     }
 
-    function populateSelect(select, values, formatFn) {
+    function populateSelect(select, values, formatFn, defaultLabel = 'Todos') {
+      const defaultOption = document.createElement('option');
+      defaultOption.value = '';
+      defaultOption.textContent = defaultLabel;
+      select.innerHTML = '';
+      select.appendChild(defaultOption);
+
       values.forEach(value => {
         const option = document.createElement('option');
         option.value = value;
@@ -455,8 +548,198 @@
       });
     }
 
+    function buildBeneficiaryProfiles(data) {
+      const map = new Map();
+
+      data.forEach(item => {
+        if (!map.has(item.nome_beneficiario)) {
+          map.set(item.nome_beneficiario, {
+            nome: item.nome_beneficiario,
+            instalacoes: new Set(),
+            mensalidades: new Set(),
+            contratados: new Set(),
+            totalRecebido: 0,
+            registros: 0
+          });
+        }
+
+        const profile = map.get(item.nome_beneficiario);
+        profile.instalacoes.add(item.instalacao);
+        profile.mensalidades.add(item.valorMensalidade);
+        profile.contratados.add(item.kWhDisponibilizadosMes);
+        profile.totalRecebido += item.edp_total_kwh;
+        profile.registros += 1;
+      });
+
+      return Array.from(map.values()).map(profile => {
+        const mensalidades = Array.from(profile.mensalidades).sort((a, b) => a - b);
+        const contratados = Array.from(profile.contratados).sort((a, b) => a - b);
+
+        const mensalidadeDistinct = mensalidades.length
+          ? mensalidades[0]
+          : 0;
+        const contratadoDistinct = contratados.length
+          ? contratados[0]
+          : 0;
+
+        return {
+          nome: profile.nome,
+          instalacoes: Array.from(profile.instalacoes).sort(),
+          mensalidadeDistinct,
+          contratadoDistinct,
+          recebidoMedio: profile.registros ? profile.totalRecebido / profile.registros : 0,
+          valorUnitario: contratadoDistinct ? mensalidadeDistinct / contratadoDistinct : 0
+        };
+      }).sort((a, b) => profileSort(a.nome, b.nome));
+    }
+
+    function profileSort(a, b) {
+      return a.localeCompare(b, 'pt-BR', { sensitivity: 'base' });
+    }
+
+    function formatInstalacoes(instalacoes) {
+      if (!instalacoes.length) return 'Sem instalação registrada';
+      if (instalacoes.length === 1) return `Instalação ${instalacoes[0]}`;
+      const preview = instalacoes.slice(0, 2).join(', ');
+      const remaining = instalacoes.length - 2;
+      return `Instalações ${preview}${remaining > 0 ? ` +${remaining}` : ''}`;
+    }
+
+    function updateBenefUsage(count, hasSelection, awaitingSelection = false) {
+      let text;
+      if (awaitingSelection) {
+        text = 'Selecione um beneficiário ou aplique filtros para visualizar os dados.';
+      } else if (count === 0) {
+        text = 'Nenhum beneficiário atende aos filtros atuais.';
+      } else if (hasSelection) {
+        text = count === 1
+          ? 'Dados referentes a 1 beneficiário selecionado.'
+          : `Dados referentes a ${count} beneficiários selecionados.`;
+      } else {
+        text = count === 1
+          ? 'Dados gerais abrangendo 1 beneficiário.'
+          : `Dados gerais abrangendo ${count} beneficiários.`;
+      }
+
+      benefUsageIndicators.forEach(node => {
+        node.textContent = text;
+      });
+    }
+
+    function hasActiveFilters(filters) {
+      return Boolean(
+        filters.ano ||
+        filters.semestre ||
+        filters.mes ||
+        filters.instalacao ||
+        filters.beneficiarios.size
+      );
+    }
+
+    function showAwaitingSelection() {
+      diffValue.textContent = '0 kWh';
+      diffCard.dataset.state = 'positive';
+      diffLegend.textContent = 'Selecione um beneficiário ou aplique filtros para visualizar os dados.';
+      insightsGrid.innerHTML = '';
+      tableBody.innerHTML = '';
+      tableBody.parentElement.style.display = 'none';
+      emptyState.hidden = false;
+      emptyState.textContent = 'Selecione um beneficiário ou aplique filtros para visualizar.';
+      energiaChart && updateChart(energiaChart, []);
+    }
+
+    function populateBenefCheckboxes(profiles) {
+      beneficiariosList = profiles.map(profile => profile.nome);
+      selectedBeneficiarios = new Set();
+      benefFilterContainer.innerHTML = '';
+
+      const allLabel = document.createElement('label');
+      allLabel.className = 'checkbox-item checkbox-all';
+      const allInput = document.createElement('input');
+      allInput.type = 'checkbox';
+      allInput.id = 'benef-all';
+      allInput.checked = false;
+      allInput.addEventListener('change', () => {
+        const checked = allInput.checked;
+        toggleBenefCheckboxes(checked);
+        selectedBeneficiarios = checked ? new Set(beneficiariosList) : new Set();
+        refreshDashboard();
+      });
+      const allMeta = document.createElement('div');
+      allMeta.className = 'checkbox-meta';
+      allMeta.innerHTML = `
+        <div class="benef-primary">
+          <strong>Todos os beneficiários</strong>
+          <span>Visão geral</span>
+        </div>
+        <div class="benef-metrics">
+          <span>Selecione para limpar filtros individuais</span>
+        </div>
+      `;
+
+      allLabel.appendChild(allInput);
+      allLabel.appendChild(allMeta);
+      benefFilterContainer.appendChild(allLabel);
+
+      profiles.forEach(profile => {
+        const label = document.createElement('label');
+        label.className = 'checkbox-item';
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.value = profile.nome;
+        input.dataset.role = 'benef-option';
+        input.checked = false;
+        input.addEventListener('change', () => {
+          if (input.checked) {
+            selectedBeneficiarios.add(profile.nome);
+          } else {
+            selectedBeneficiarios.delete(profile.nome);
+          }
+          const allCheckbox = document.getElementById('benef-all');
+          if (allCheckbox) {
+            allCheckbox.checked = selectedBeneficiarios.size === beneficiariosList.length;
+          }
+          refreshDashboard();
+        });
+
+        const meta = document.createElement('div');
+        meta.className = 'checkbox-meta';
+        meta.innerHTML = `
+          <div class="benef-primary">
+            <strong>${profile.nome}</strong>
+            <span>${formatInstalacoes(profile.instalacoes)}</span>
+          </div>
+          <div class="benef-metrics">
+            <span>Mensalidade contratada: <strong>${currencyFormatter.format(profile.mensalidadeDistinct)}</strong></span>
+            <span>kWh contratados (plano): <strong>${numberFormatter.format(profile.contratadoDistinct)}</strong></span>
+            <span>VALOR KWH: <strong>${currencyPerKwhFormatter.format(profile.valorUnitario)}</strong></span>
+          </div>
+        `;
+
+        label.appendChild(input);
+        label.appendChild(meta);
+        benefFilterContainer.appendChild(label);
+      });
+    }
+
+    function toggleBenefCheckboxes(state) {
+      benefFilterContainer
+        .querySelectorAll('input[data-role="benef-option"]')
+        .forEach(cb => {
+          cb.checked = state;
+        });
+    }
+
+    function resetBenefCheckboxes() {
+      if (!beneficiariosList.length) return;
+      const allCheckbox = document.getElementById('benef-all');
+      if (allCheckbox) allCheckbox.checked = false;
+      toggleBenefCheckboxes(false);
+      selectedBeneficiarios = new Set();
+    }
+
     function formatMesLabel(value) {
-      const date = new Date(value);
+      const date = new Date(`${value}T00:00:00`);
       return monthFormatter.format(date);
     }
 
@@ -466,7 +749,7 @@
         semestre: selectElements.semestre.value,
         mes: selectElements.mes.value,
         instalacao: selectElements.instalacao.value,
-        beneficiario: selectElements.beneficiario.value
+        beneficiarios: new Set(selectedBeneficiarios)
       };
     }
 
@@ -476,7 +759,7 @@
         if (filters.semestre && item.semestre !== filters.semestre) return false;
         if (filters.mes && item.mes_ano !== filters.mes) return false;
         if (filters.instalacao && item.instalacao !== filters.instalacao) return false;
-        if (filters.beneficiario && item.nome_beneficiario !== filters.beneficiario) return false;
+        if (filters.beneficiarios.size && !filters.beneficiarios.has(item.nome_beneficiario)) return false;
         return true;
       });
     }
@@ -518,7 +801,7 @@
           detail: summary.months >= 12 ? 'Janela completa de 12 meses' : 'Ainda sem 12 meses completos'
         },
         {
-          label: 'Média contratada (kWh)',
+          label: 'kWh contratado',
           value: numberFormatter.format(summary.mediaContratada),
           detail: 'Meta mensal do plano de assinatura'
         },
@@ -536,7 +819,7 @@
           label: 'Diferença acumulada',
           value: `${summary.totalDiferenca >= 0 ? '+' : ''}${numberFormatter.format(summary.totalDiferenca)} kWh`,
           detail: summary.totalDiferenca >= 0 ? 'Excedente recebido' : 'Déficit acumulado'
-        },
+        }
       ];
 
       insightsGrid.innerHTML = cards.map(card => `
@@ -554,7 +837,7 @@
           <td>${formatMesLabel(item.mes_ano)}</td>
           <td>${item.instalacao}</td>
           <td>${item.nome_beneficiario}</td>
-          <td>${numberFormatter.format(item.kWhDisponibilizadosMes)} kWh</td>
+                  <td>${numberFormatter.format(item.kWhDisponibilizadosMes)} kWh</td>
           <td>${numberFormatter.format(item.edp_total_kwh)} kWh</td>
           <td style="color:${item.edp_dif_recebidos_x_contratado >= 0 ? 'var(--positive)' : 'var(--negative)'}">
             ${item.edp_dif_recebidos_x_contratado >= 0 ? '+' : ''}${numberFormatter.format(item.edp_dif_recebidos_x_contratado)} kWh
@@ -566,6 +849,9 @@
       const hasData = data.length > 0;
       tableBody.parentElement.style.display = hasData ? 'table' : 'none';
       emptyState.hidden = hasData;
+      if (!hasData) {
+        emptyState.textContent = 'Nenhum registro encontrado para os filtros selecionados.';
+      }
     }
 
     function buildChart(data) {
@@ -636,8 +922,6 @@
       });
     }
 
-    let energiaChart = null;
-
     function updateChart(chart, data) {
       chart.data.labels = data.map(item => formatMesLabel(item.mes_ano));
       chart.data.datasets[0].data = data.map(item => item.kWhDisponibilizadosMes);
@@ -646,34 +930,67 @@
     }
 
     function refreshDashboard() {
+      if (!rawData.length) return;
+
       const filters = getFilters();
+      const hasFilters = hasActiveFilters(filters);
+
+      if (!hasFilters) {
+        updateBenefUsage(beneficiariosList.length, false, true);
+        showAwaitingSelection();
+        return;
+      }
+
       const filtered = applyFilters(rawData, filters);
-      const summary = summarize(filtered);
+      const beneficiariosFiltrados = new Set(filtered.map(item => item.nome_beneficiario)).size;
+      const hasBenefSelection = filters.beneficiarios.size > 0;
 
       if (filtered.length === 0) {
+        updateBenefUsage(beneficiariosFiltrados, hasBenefSelection);
         updateDiffCard({ totalDiferenca: 0 });
         diffLegend.textContent = 'Sem dados para os filtros aplicados.';
         insightsGrid.innerHTML = '';
         tableBody.innerHTML = '';
+        tableBody.parentElement.style.display = 'none';
         emptyState.hidden = false;
         emptyState.textContent = 'Nenhum registro encontrado para os filtros selecionados.';
         energiaChart && updateChart(energiaChart, []);
         return;
       }
 
+      const summary = summarize(filtered);
+      updateBenefUsage(beneficiariosFiltrados, hasBenefSelection);
       updateDiffCard(summary);
       updateInsights(summary);
       updateTable(filtered);
       energiaChart && updateChart(energiaChart, filtered);
     }
 
+    function initDashboard() {
+      if (!rawData.length) {
+        emptyState.hidden = false;
+        emptyState.textContent = 'Dados embutidos não encontrados.';
+        diffLegend.textContent = 'Sem dados carregados.';
+        filtersForm.querySelectorAll('select, button').forEach(el => (el.disabled = true));
+        return;
+      }
+
+      populateFilters(rawData);
+      updateInstalacoesIndicator(rawData);
+      energiaChart = buildChart(rawData);
+      refreshDashboard();
+    }
+
     filtersForm.addEventListener('input', refreshDashboard);
     filtersForm.addEventListener('change', refreshDashboard);
-    filtersForm.addEventListener('reset', () => setTimeout(refreshDashboard, 0));
+    filtersForm.addEventListener('reset', () => {
+      setTimeout(() => {
+        resetBenefCheckboxes();
+        refreshDashboard();
+      }, 0);
+    });
 
-    populateFilters(rawData);
-    energiaChart = buildChart(rawData);
-    refreshDashboard();
+    initDashboard();
   </script>
 </body>
 </html>
