@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard de Energia - UAINE Group</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    :root {
+      --bg: #f4fbf7;
+      --card: #ffffff;
+      --card-alt: #e9f6ef;
+      --border: #c6e4d6;
+      --accent: #0f9b9c;
+      --accent-strong: #0d7c83;
+      --positive: #22c55e;
+      --negative: #ef4444;
+      --text: #0f2a24;
+      --muted: #5f7468;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: radial-gradient(120% 120% at 50% 0%, #b9f3d5 0%, var(--bg) 60%);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    header {
+      max-width: 1200px;
+      margin: 0 auto 32px auto;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2.25rem;
+      font-weight: 700;
+    }
+
+    .header-metric {
+      margin: 12px auto 0 auto;
+      max-width: 720px;
+      color: var(--muted);
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 0 auto 80px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    section {
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 25px 70px rgba(15, 41, 36, 0.12);
+      backdrop-filter: blur(8px);
+    }
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 18px;
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+
+    .section-title span {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 155, 156, 0.18);
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .filters-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 16px;
+    }
+
+    .field-full {
+      grid-column: 1 / -1;
+    }
+
+    .field-full select {
+      width: 100%;
+    }
+
+    .checkbox-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 16px;
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 12px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .checkbox-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.9rem;
+      color: var(--text);
+    }
+
+    .checkbox-item input {
+      accent-color: var(--accent);
+      width: 16px;
+      height: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--muted);
+    }
+
+    select, input {
+      background: var(--card-alt);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 12px;
+      color: var(--text);
+      font-size: 0.95rem;
+      transition: border 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px rgba(15, 155, 156, 0.2);
+    }
+
+    button {
+      background: linear-gradient(120deg, var(--accent), #4ade80);
+      border: none;
+      border-radius: 12px;
+      color: #fff;
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 12px 18px;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 30px rgba(15, 155, 156, 0.3);
+    }
+
+    .highlight-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 20px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #e4fff5 0%, #ffffff 60%);
+      border: 1px solid var(--border);
+      margin-bottom: 16px;
+    }
+
+    .highlight-card[data-state="positive"] {
+      border-color: rgba(34, 197, 94, 0.6);
+      box-shadow: 0 10px 32px rgba(34, 197, 94, 0.2);
+    }
+
+    .highlight-card[data-state="negative"] {
+      border-color: rgba(239, 68, 68, 0.5);
+      box-shadow: 0 10px 32px rgba(239, 68, 68, 0.18);
+    }
+
+    .highlight-card small {
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      font-weight: 600;
+      color: var(--muted);
+    }
+
+    .highlight-card strong {
+      font-size: 2rem;
+      letter-spacing: -0.02em;
+    }
+
+    .highlight-card p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .chart-container {
+      position: relative;
+      width: 100%;
+      min-height: 320px;
+    }
+
+    .insights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+    }
+
+    .insight-card {
+      background: linear-gradient(135deg, #fcfffd 0%, #e8f8f1 80%);
+      border: 1px solid rgba(15, 155, 156, 0.12);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+      min-height: 150px;
+    }
+
+    .insight-card span {
+      font-size: 0.8rem;
+      color: var(--muted);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .insight-card strong {
+      font-size: 1.6rem;
+      font-weight: 600;
+    }
+
+    .insight-card p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .table-wrapper {
+      margin-top: 20px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    thead {
+      background: var(--card-alt);
+    }
+
+    th, td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid rgba(15, 42, 36, 0.08);
+    }
+
+    tbody tr:hover {
+      background: rgba(15, 155, 156, 0.12);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px 0;
+      color: var(--muted);
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px;
+      }
+      section {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Analítica de Energia Contratada vs Recebida</h1>
+    <p id="instalacoesIndicator" class="header-metric">Instalações monitoradas: 0</p>
+  </header>
+
+  <main>
+    <section>
+      <div class="section-title">
+        <span>01</span>
+        <div>Filtros inteligentes</div>
+      </div>
+      <form id="filters" class="filters-grid">
+        <div class="field">
+          <label for="anoFilter">Ano</label>
+          <select id="anoFilter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="semestreFilter">Semestre</label>
+          <select id="semestreFilter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="mesFilter">Mês / Ano</label>
+          <select id="mesFilter">
+            <option value="">Todos</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="instalacaoFilter">Instalação</label>
+          <select id="instalacaoFilter">
+            <option value="">Todas</option>
+          </select>
+        </div>
+        <div class="field field-full">
+          <label for="benefFilter">Beneficiário</label>
+          <div id="benefFilter" class="checkbox-list"></div>
+        </div>
+        <button type="reset">Limpar filtros</button>
+      </form>
+    </section>
+
+    <section>
+      <div class="highlight-card" id="diffCard" data-state="positive">
+        <small>Balanço recebido x contratado</small>
+        <strong id="diffValue">0 kWh</strong>
+        <p id="diffLegend">Nenhum filtro aplicado</p>
+      </div>
+      <div class="section-title">
+        <span>02</span>
+        <div>Distribuição mensal</div>
+      </div>
+      <div class="chart-container">
+        <canvas id="energiaChart" aria-label="Gráfico contratado vs recebido" role="img"></canvas>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title">
+        <span>03</span>
+        <div>Insights-chave (12 meses)</div>
+      </div>
+      <div class="insights-grid" id="insightsGrid">
+        <!-- preenchido via JS -->
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Mês/Ano</th>
+              <th>Instalação</th>
+              <th>Beneficiário</th>
+              <th>kWh contratado</th>
+              <th>kWh recebido</th>
+              <th>Diferença</th>
+              <th>Mensalidade (R$)</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <!-- preenchido via JS -->
+          </tbody>
+        </table>
+        <div class="empty-state" id="emptyState" hidden>
+          Nenhum registro encontrado para os filtros selecionados.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const rawData = [{"ano":2024,"semestre":"Semestre_1_2024","mes_ano":"2024-01-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":7091,"edp_dif_recebidos_x_contratado":596},{"ano":2024,"semestre":"Semestre_1_2024","mes_ano":"2024-02-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":6476,"edp_dif_recebidos_x_contratado":-19},{"ano":2024,"semestre":"Semestre_1_2024","mes_ano":"2024-03-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":8502,"edp_dif_recebidos_x_contratado":2007},{"ano":2024,"semestre":"Semestre_1_2024","mes_ano":"2024-04-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":7527,"edp_dif_recebidos_x_contratado":1032},{"ano":2024,"semestre":"Semestre_1_2024","mes_ano":"2024-05-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":6474,"edp_dif_recebidos_x_contratado":-21},{"ano":2024,"semestre":"Semestre_1_2024","mes_ano":"2024-06-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":5238,"edp_dif_recebidos_x_contratado":-1257},{"ano":2024,"semestre":"Semestre_2_2024","mes_ano":"2024-07-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":5506,"edp_dif_recebidos_x_contratado":-989},{"ano":2024,"semestre":"Semestre_2_2024","mes_ano":"2024-08-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":6094,"edp_dif_recebidos_x_contratado":-401},{"ano":2024,"semestre":"Semestre_2_2024","mes_ano":"2024-09-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":6334,"edp_dif_recebidos_x_contratado":-161},{"ano":2024,"semestre":"Semestre_2_2024","mes_ano":"2024-10-01","instalacao":"506281","cpf_cnpj_beneficiario":"27320134000146","nome_beneficiario":"BAR E RESTAURANTE PIRAO LTDA ME","kWhDisponibilizadosMes":6495,"valorMensalidade":6574,"edp_total_kwh":5648,"edp_dif_recebidos_x_contratado":-847}];
+
+    const filtersForm = document.getElementById('filters');
+    const diffCard = document.getElementById('diffCard');
+    const diffValue = document.getElementById('diffValue');
+    const diffLegend = document.getElementById('diffLegend');
+    const tableBody = document.getElementById('tableBody');
+    const emptyState = document.getElementById('emptyState');
+    const insightsGrid = document.getElementById('insightsGrid');
+
+    const selectElements = {
+      ano: document.getElementById('anoFilter'),
+      semestre: document.getElementById('semestreFilter'),
+      mes: document.getElementById('mesFilter'),
+      instalacao: document.getElementById('instalacaoFilter'),
+      beneficiario: document.getElementById('benefFilter')
+    };
+
+    const monthFormatter = new Intl.DateTimeFormat('pt-BR', { month: 'short', year: 'numeric' });
+    const currencyFormatter = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+    const numberFormatter = new Intl.NumberFormat('pt-BR', { maximumFractionDigits: 0 });
+
+    function populateFilters(data) {
+      const sets = {
+        ano: new Set(),
+        semestre: new Set(),
+        mes: new Set(),
+        instalacao: new Set(),
+        beneficiario: new Set()
+      };
+
+      data.forEach(item => {
+        sets.ano.add(item.ano);
+        sets.semestre.add(item.semestre);
+        sets.mes.add(item.mes_ano);
+        sets.instalacao.add(item.instalacao);
+        sets.beneficiario.add(item.nome_beneficiario);
+      });
+
+      const sortedMes = Array.from(sets.mes).sort();
+
+      populateSelect(selectElements.ano, Array.from(sets.ano).sort());
+      populateSelect(selectElements.semestre, Array.from(sets.semestre).sort());
+      populateSelect(selectElements.mes, sortedMes, formatMesLabel);
+      populateSelect(selectElements.instalacao, Array.from(sets.instalacao).sort());
+      populateSelect(selectElements.beneficiario, Array.from(sets.beneficiario).sort());
+    }
+
+    function populateSelect(select, values, formatFn) {
+      values.forEach(value => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = formatFn ? formatFn(value) : value;
+        select.appendChild(option);
+      });
+    }
+
+    function formatMesLabel(value) {
+      const date = new Date(value);
+      return monthFormatter.format(date);
+    }
+
+    function getFilters() {
+      return {
+        ano: selectElements.ano.value,
+        semestre: selectElements.semestre.value,
+        mes: selectElements.mes.value,
+        instalacao: selectElements.instalacao.value,
+        beneficiario: selectElements.beneficiario.value
+      };
+    }
+
+    function applyFilters(data, filters) {
+      return data.filter(item => {
+        if (filters.ano && String(item.ano) !== filters.ano) return false;
+        if (filters.semestre && item.semestre !== filters.semestre) return false;
+        if (filters.mes && item.mes_ano !== filters.mes) return false;
+        if (filters.instalacao && item.instalacao !== filters.instalacao) return false;
+        if (filters.beneficiario && item.nome_beneficiario !== filters.beneficiario) return false;
+        return true;
+      });
+    }
+
+    function summarize(data) {
+      const months = data.length;
+      const totalContratado = data.reduce((sum, item) => sum + item.kWhDisponibilizadosMes, 0);
+      const totalRecebido = data.reduce((sum, item) => sum + item.edp_total_kwh, 0);
+      const totalDiferenca = data.reduce((sum, item) => sum + item.edp_dif_recebidos_x_contratado, 0);
+      const totalMensalidade = data.reduce((sum, item) => sum + item.valorMensalidade, 0);
+      const mediaContratada = months ? totalContratado / months : 0;
+      const mediaRecebida = months ? totalRecebido / months : 0;
+
+      return {
+        months,
+        totalContratado,
+        totalRecebido,
+        totalDiferenca,
+        totalMensalidade,
+        mediaContratada,
+        mediaRecebida,
+        aderencia: mediaContratada ? (mediaRecebida / mediaContratada) * 100 : 0
+      };
+    }
+
+    function updateDiffCard(summary) {
+      diffValue.textContent = `${summary.totalDiferenca >= 0 ? '+' : ''}${numberFormatter.format(summary.totalDiferenca)} kWh`;
+      diffCard.dataset.state = summary.totalDiferenca >= 0 ? 'positive' : 'negative';
+      diffLegend.textContent = summary.totalDiferenca >= 0
+        ? 'Recebimento acima do contratado nos filtros selecionados.'
+        : 'Recebimento abaixo do contratado nos filtros selecionados.';
+    }
+
+    function updateInsights(summary) {
+      const cards = [
+        {
+          label: 'Meses analisados',
+          value: summary.months,
+          detail: summary.months >= 12 ? 'Janela completa de 12 meses' : 'Ainda sem 12 meses completos'
+        },
+        {
+          label: 'Média contratada (kWh)',
+          value: numberFormatter.format(summary.mediaContratada),
+          detail: 'Meta mensal do plano de assinatura'
+        },
+        {
+          label: 'Média recebida (kWh)',
+          value: numberFormatter.format(summary.mediaRecebida),
+          detail: summary.mediaRecebida >= summary.mediaContratada ? 'Acima da meta contratada' : 'Abaixo da meta contratada'
+        },
+        {
+          label: 'Índice de entrega',
+          value: `${summary.aderencia.toFixed(1)}%`,
+          detail: summary.aderencia >= 100 ? 'Plano entregue na totalidade' : 'Ajustar recebimento para 100%'
+        },
+        {
+          label: 'Diferença acumulada',
+          value: `${summary.totalDiferenca >= 0 ? '+' : ''}${numberFormatter.format(summary.totalDiferenca)} kWh`,
+          detail: summary.totalDiferenca >= 0 ? 'Excedente recebido' : 'Déficit acumulado'
+        },
+      ];
+
+      insightsGrid.innerHTML = cards.map(card => `
+        <div class="insight-card">
+          <span>${card.label}</span>
+          <strong>${card.value}</strong>
+          <p>${card.detail}</p>
+        </div>
+      `).join('');
+    }
+
+    function updateTable(data) {
+      tableBody.innerHTML = data.map(item => `
+        <tr>
+          <td>${formatMesLabel(item.mes_ano)}</td>
+          <td>${item.instalacao}</td>
+          <td>${item.nome_beneficiario}</td>
+          <td>${numberFormatter.format(item.kWhDisponibilizadosMes)} kWh</td>
+          <td>${numberFormatter.format(item.edp_total_kwh)} kWh</td>
+          <td style="color:${item.edp_dif_recebidos_x_contratado >= 0 ? 'var(--positive)' : 'var(--negative)'}">
+            ${item.edp_dif_recebidos_x_contratado >= 0 ? '+' : ''}${numberFormatter.format(item.edp_dif_recebidos_x_contratado)} kWh
+          </td>
+          <td>${currencyFormatter.format(item.valorMensalidade)}</td>
+        </tr>
+      `).join('');
+
+      const hasData = data.length > 0;
+      tableBody.parentElement.style.display = hasData ? 'table' : 'none';
+      emptyState.hidden = hasData;
+    }
+
+    function buildChart(data) {
+      const ctx = document.getElementById('energiaChart').getContext('2d');
+
+      return new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: data.map(item => formatMesLabel(item.mes_ano)),
+          datasets: [
+            {
+              label: 'kWh contratado',
+              data: data.map(item => item.kWhDisponibilizadosMes),
+              borderColor: 'rgba(15, 155, 156, 0.9)',
+              backgroundColor: 'rgba(15, 155, 156, 0.2)',
+              tension: 0.35,
+              borderWidth: 3,
+              pointRadius: 4,
+              fill: false
+            },
+            {
+              label: 'kWh recebido',
+              data: data.map(item => item.edp_total_kwh),
+              borderColor: 'rgba(249, 115, 22, 0.9)',
+              backgroundColor: 'rgba(249, 115, 22, 0.2)',
+              tension: 0.35,
+              borderWidth: 3,
+              pointRadius: 4,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          interaction: {
+            mode: 'index',
+            intersect: false
+          },
+          plugins: {
+            legend: {
+              labels: {
+                color: '#0f2a24'
+              }
+            },
+            tooltip: {
+              callbacks: {
+                label: context => `${context.dataset.label}: ${numberFormatter.format(context.parsed.y)} kWh`
+              }
+            }
+          },
+          scales: {
+            x: {
+              ticks: { color: '#0f2a24' },
+              grid: { display: false }
+            },
+            y: {
+              ticks: {
+                color: '#0f2a24',
+                callback: value => `${numberFormatter.format(value)}`
+              },
+              grid: {
+                color: 'rgba(15, 42, 36, 0.1)'
+              }
+            }
+          }
+        }
+      });
+    }
+
+    let energiaChart = null;
+
+    function updateChart(chart, data) {
+      chart.data.labels = data.map(item => formatMesLabel(item.mes_ano));
+      chart.data.datasets[0].data = data.map(item => item.kWhDisponibilizadosMes);
+      chart.data.datasets[1].data = data.map(item => item.edp_total_kwh);
+      chart.update();
+    }
+
+    function refreshDashboard() {
+      const filters = getFilters();
+      const filtered = applyFilters(rawData, filters);
+      const summary = summarize(filtered);
+
+      if (filtered.length === 0) {
+        updateDiffCard({ totalDiferenca: 0 });
+        diffLegend.textContent = 'Sem dados para os filtros aplicados.';
+        insightsGrid.innerHTML = '';
+        tableBody.innerHTML = '';
+        emptyState.hidden = false;
+        emptyState.textContent = 'Nenhum registro encontrado para os filtros selecionados.';
+        energiaChart && updateChart(energiaChart, []);
+        return;
+      }
+
+      updateDiffCard(summary);
+      updateInsights(summary);
+      updateTable(filtered);
+      energiaChart && updateChart(energiaChart, filtered);
+    }
+
+    filtersForm.addEventListener('input', refreshDashboard);
+    filtersForm.addEventListener('change', refreshDashboard);
+    filtersForm.addEventListener('reset', () => setTimeout(refreshDashboard, 0));
+
+    populateFilters(rawData);
+    energiaChart = buildChart(rawData);
+    refreshDashboard();
+  </script>
+</body>
+</html>
+
