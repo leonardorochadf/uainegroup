@@ -54,7 +54,7 @@
       margin: 0;
       font-size: 2.25rem;
       font-weight: 700;
-      color: #22c55e;
+      color: #15803d;
       text-transform: uppercase;
     }
 
@@ -373,6 +373,57 @@
       max-height: 350px !important;
       height: 350px !important;
       min-height: 350px;
+    }
+    
+    .chart-table-container {
+      margin-top: 16px;
+      width: 100%;
+      overflow-x: auto;
+    }
+    
+    .chart-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      background: var(--card);
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+    
+    .chart-table thead {
+      background: var(--card-alt);
+    }
+    
+    .chart-table th {
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: var(--text);
+      border-bottom: 2px solid var(--border);
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+    }
+    
+    .chart-table td {
+      padding: 8px 12px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+    }
+    
+    .chart-table tbody tr:last-child td {
+      border-bottom: none;
+    }
+    
+    .chart-table tbody tr:hover {
+      background: rgba(15, 155, 156, 0.05);
+    }
+    
+    .chart-table td:nth-child(2),
+    .chart-table td:nth-child(3) {
+      text-align: right;
+      font-weight: 500;
     }
     
     .benef-meta {
@@ -746,6 +797,7 @@
     <div class="header-container">
       <h1>Analítica de Energia Contratada vs Recebida</h1>
       <img src="logo_cooperebr.jpg" alt="COOPEREBR - Energia Verde" class="header-logo">
+      <p style="text-align: center; font-size: 1.1rem; font-weight: 600; color: #333; margin-top: 12px; margin-bottom: 0;">PLANO DE ASSINATURA</p>
     </div>
     <p id="instalacoesIndicator" class="header-metric">Instalações monitoradas: 0</p>
   </header>
@@ -804,7 +856,7 @@
           </div>
         </div>
         <div class="field field-full">
-          <label for="benefFilter">Benefici├írio</label>
+          <label for="benefFilter">Beneficiário</label>
           <div id="benefFilter" class="checkbox-list"></div>
         </div>
         <button type="reset">Limpar filtros</button>
@@ -815,64 +867,14 @@
       <h2 class="section-title" style="margin-bottom: 16px; font-size: 1.2rem; font-weight: 700;">
         Total Período Filtro
       </h2>
-      <div class="highlight-card" id="diffCard" data-state="positive">
-        <small>Balanço recebido x contratado</small>
-        <strong id="diffValue">0 kWh</strong>
-        <p id="diffLegend">Nenhum filtro aplicado</p>
+      <div class="highlight-card" id="diffCard" data-state="positive" style="display: none;">
+        <small style="color: #000000; font-weight: 600;">Recebido acima do contratado</small>
+        <strong id="diffValue" style="font-size: 2rem; font-weight: 700; color: #15803d; margin: 8px 0;">0 kWh</strong>
       </div>
       <div class="year-summary-card" id="yearSummaryCard" hidden>
         <div class="year-summary-item">
-          <div class="year-summary-item-label">kWh Contratados (Período Filtro)</div>
-          <div class="year-summary-item-value" id="yearContratado">0</div>
-        </div>
-        <div class="year-summary-item">
           <div class="year-summary-item-label">kWh Recebidos (Período Filtro)</div>
           <div class="year-summary-item-value" id="yearRecebido">0</div>
-        </div>
-        <div class="year-summary-item">
-          <div class="year-summary-item-label">Diferença</div>
-          <div class="year-summary-item-value" id="yearDiferenca">0</div>
-          <div class="year-summary-item-detail" id="yearDiferencaDetail"></div>
-        </div>
-        <div class="year-summary-item">
-          <div class="year-summary-item-label">% Diferença</div>
-          <div class="year-summary-item-value" id="yearPercentual">0%</div>
-        </div>
-      </div>
-      <div class="summary-cards-container" id="summaryCardsContainer" hidden>
-        <div class="summary-card" id="valorMedioKwhCard">
-          <div class="summary-card-title">Valor Médio kWh</div>
-          <div class="summary-card-item">
-            <span class="summary-card-item-label">Valor Médio Contratado:</span>
-            <span class="summary-card-item-value" id="valorMedioKwh">R$ 0,00</span>
-          </div>
-          <div class="summary-card-item">
-            <span class="summary-card-item-label">Valor Médio kWh EDP:</span>
-            <span class="summary-card-item-value" id="valorMedioKwhEdpCard">R$ 0,00</span>
-          </div>
-          <div class="summary-card-item">
-            <span class="summary-card-item-label">Comparação com EDP:</span>
-            <span class="summary-card-item-value" id="comparacaoEdp">0%</span>
-          </div>
-        </div>
-        <div class="summary-card" id="valorMedioAnoCard">
-          <div class="summary-card-title">Valores Totais</div>
-          <div class="summary-card-item">
-            <span class="summary-card-item-label">Soma da Mensalidade:</span>
-            <span class="summary-card-item-value" id="somaMensalidadeAno">R$ 0</span>
-          </div>
-          <div class="summary-card-item">
-            <span class="summary-card-item-label">Soma do kWh:</span>
-            <span class="summary-card-item-value" id="somaKwhAno">0</span>
-          </div>
-          <div class="summary-card-item">
-            <span class="summary-card-item-label">Média Valor kWh EDP:</span>
-            <span class="summary-card-item-value" id="mediaKwhEdpAno">R$ 0,00</span>
-          </div>
-          <div class="summary-card-item">
-            <span class="summary-card-item-label">Soma kWh Recebido:</span>
-            <span class="summary-card-item-value" id="somaKwhRecebidoAno">0</span>
-          </div>
         </div>
       </div>
       <div class="section-title">
@@ -899,14 +901,10 @@
               <th>Mês/Ano</th>
               <th>Instalação</th>
               <th>Beneficiário</th>
-              <th>kWh contratado</th>
               <th>kWh recebido</th>
-              <th>Diferença</th>
+              <th>kWh Recebido a mais do Previsto</th>
               <th>Mensalidade (R$)</th>
-              <th>Valor kWh</th>
-              <th>Valor kWh EDP</th>
               <th>% Desc. Energia</th>
-              <th>% Desc. Aplicado</th>
             </tr>
           </thead>
           <tbody id="tableBody">
@@ -996,7 +994,6 @@
     const filtersForm = document.getElementById('filters');
     const diffCard = document.getElementById('diffCard');
     const diffValue = document.getElementById('diffValue');
-    const diffLegend = document.getElementById('diffLegend');
     const tableBody = document.getElementById('tableBody');
     const emptyState = document.getElementById('emptyState');
     const insightsGrid = document.getElementById('insightsGrid');
@@ -1006,14 +1003,6 @@
     const yearDiferenca = document.getElementById('yearDiferenca');
     const yearDiferencaDetail = document.getElementById('yearDiferencaDetail');
     const yearPercentual = document.getElementById('yearPercentual');
-    const summaryCardsContainer = document.getElementById('summaryCardsContainer');
-    const valorMedioKwh = document.getElementById('valorMedioKwh');
-    const valorMedioKwhEdpCard = document.getElementById('valorMedioKwhEdpCard');
-    const comparacaoEdp = document.getElementById('comparacaoEdp');
-    const somaMensalidadeAno = document.getElementById('somaMensalidadeAno');
-    const somaKwhAno = document.getElementById('somaKwhAno');
-    const mediaKwhEdpAno = document.getElementById('mediaKwhEdpAno');
-    const somaKwhRecebidoAno = document.getElementById('somaKwhRecebidoAno');
 
     const selectElements = {
       parceiro: document.getElementById('parceiroFilter'),
@@ -1408,6 +1397,15 @@
                 
                 if (!dadosAno) return '';
                 
+                // Calcula diferença entre Média kWh EDP e Valor Médio kWh
+                const diferencaKwhEdp = (dadosAno.mediaKwhEdp || 0) - (dadosAno.valorMedioKwh || 0);
+                const percentualDiferencaKwhEdp = (dadosAno.valorMedioKwh || 0) > 0 
+                  ? (diferencaKwhEdp / (dadosAno.valorMedioKwh || 1)) * 100 
+                  : 0;
+                
+                // Calcula diferença entre kWh recebido e kWh do plano
+                const diferencaKwhRecebido = (dadosAno.somaKwhRecebido || 0) - (dadosAno.somaKwhContratado || 0);
+                
                 return `
             <div class="benef-meta-row">
               <div class="benef-meta-content">
@@ -1415,35 +1413,16 @@
                 <div class="benef-atualmente-container">
                   <div class="benef-atualmente-title">Atualmente</div>
                   <div class="benef-atualmente-boxes">
-                    <div class="benef-box">
+                    <div class="benef-box" style="flex: 1;">
                       <div class="benef-box-title">Plano de assinatura</div>
                       <div class="benef-box-item">
                         <span>Mensalidade:</span>
                         <strong>${currencyFormatter.format(profile.mensalidadeDistinct)}</strong>
                       </div>
                       <div class="benef-box-item">
-                        <span>kWh:</span>
-                        <strong>${numberFormatter.format(profile.contratadoDistinct)}</strong>
-                      </div>
-                      <div class="benef-box-item">
-                        <span>Valor kWh:</span>
-                        <strong>${currencyPerKwhFormatter.format(profile.valorUnitario)}</strong>
-                      </div>
-                      <div class="benef-box-item">
                         <span>% Desc. Energia:</span>
                         <strong>${profile.percentDescEnergia}%</strong>
                       </div>
-                    </div>
-                    <div class="benef-box">
-                      <div class="benef-box-title">EDP</div>
-                      <div class="benef-box-item">
-                        <span>Valor kWh:</span>
-                        <strong>${currencyPerKwhFormatter.format(profile.valorKwhEdp)}</strong>
-                      </div>
-                    </div>
-                    <div class="benef-box">
-                      <div class="benef-box-title">% Aplicado Médio</div>
-                      <div class="benef-box-single">${profile.percentualDescontoAplicado.toFixed(2)}%</div>
                     </div>
                   </div>
                 </div>
@@ -1457,8 +1436,8 @@
                         <strong>${currencyFormatter.format(dadosAno.somaMensalidade || 0)}</strong>
                       </div>
                       <div class="benef-box-item">
-                        <span>Soma kWh:</span>
-                        <strong>${numberFormatter.format(dadosAno.somaKwhContratado || 0)}</strong>
+                        <span>Soma kWh Recebido:</span>
+                        <strong>${numberFormatter.format(dadosAno.somaKwhRecebido || 0)}</strong>
                       </div>
                       <div class="benef-box-item">
                         <span>Valor Médio kWh:</span>
@@ -1468,43 +1447,42 @@
                         <span>Média kWh EDP:</span>
                         <strong>${currencyPerKwhFormatter.format(dadosAno.mediaKwhEdp || 0)}</strong>
                       </div>
-                      <div class="benef-box-item">
-                        <span>Soma kWh Recebido:</span>
-                        <strong>${numberFormatter.format(dadosAno.somaKwhRecebido || 0)}</strong>
-                      </div>
-                      <div class="benef-box-item">
-                        <span>Diferença:</span>
-                        <strong style="color: ${(dadosAno.diferencaKwh || 0) >= 0 ? 'var(--positive)' : 'var(--negative)'}">
-                          ${(dadosAno.diferencaKwh || 0) >= 0 ? '+' : ''}${numberFormatter.format(dadosAno.diferencaKwh || 0)}
-                        </strong>
-                      </div>
-                      <div class="benef-box-item">
-                        <span>% Diferença:</span>
-                        <strong style="color: ${(dadosAno.percentualDiferenca || 0) >= 0 ? 'var(--positive)' : 'var(--negative)'}">
-                          ${(dadosAno.percentualDiferenca || 0) >= 0 ? '+' : ''}${(dadosAno.percentualDiferenca || 0).toFixed(2)}%
-                        </strong>
-                      </div>
-                    </div>
-                    <div class="benef-atualmente-container">
-                      <div class="benef-atualmente-boxes">
-                        <div class="benef-box">
-                          <div class="benef-box-title">EDP</div>
-                          <div class="benef-box-item">
-                            <span>Valor kWh:</span>
-                            <strong>${currencyPerKwhFormatter.format(dadosAno.mediaKwhEdp || 0)}</strong>
-                          </div>
+                      ${diferencaKwhEdp >= 0 && percentualDiferencaKwhEdp >= 0 ? `
+                      <div style="margin-top: 12px; padding: 12px; background: rgba(15, 155, 156, 0.05); border-radius: 8px; border: 1px solid rgba(15, 155, 156, 0.15);">
+                        <div class="benef-box-item">
+                          <span>Diferença:</span>
+                          <strong style="color: var(--text);">
+                            ${currencyPerKwhFormatter.format(diferencaKwhEdp)}
+                          </strong>
                         </div>
-                        <div class="benef-box">
-                          <div class="benef-box-title">% Aplicado Médio</div>
-                          <div class="benef-box-single">${(dadosAno.mediaPercentualAplicado || 0).toFixed(2)}%</div>
+                        <div class="benef-box-item">
+                          <span>% Desconto Aplicado:</span>
+                          <strong style="color: var(--text);">
+                            ${percentualDiferencaKwhEdp.toFixed(2)}%
+                          </strong>
                         </div>
                       </div>
+                      ` : ''}
                     </div>
+                    ${diferencaKwhRecebido > 0 ? `
+                    <div style="margin-top: 16px; padding: 20px; background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.08) 100%); border: 2px solid rgba(34, 197, 94, 0.4); border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);">
+                      <div style="font-size: 0.85rem; color: var(--muted); margin-bottom: 8px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em;">
+                        Beneficiário Recebeu a Mais
+                      </div>
+                      <div style="font-size: 1.8rem; font-weight: 700; color: #15803d; margin-bottom: 4px;">
+                        +${numberFormatter.format(diferencaKwhRecebido)} kWh
+                      </div>
+                      <div style="font-size: 0.75rem; color: var(--muted);">
+                        Diferença entre recebido e contratado
+                      </div>
+                    </div>
+                    ` : ''}
                   </div>
                   <div class="benef-year-data-right">
                     <div class="benef-box">
                       <div class="benef-box-title">Gráfico Mensal ${year}</div>
                       <canvas id="chart-${profile.nome.replace(/\s+/g, '-')}-${year}" style="width: 100%; max-height: 350px; height: 350px;"></canvas>
+                      <div id="table-${profile.nome.replace(/\s+/g, '-')}-${year}" class="chart-table-container"></div>
                     </div>
                   </div>
                 </div>
@@ -1521,6 +1499,49 @@
         benefFilterContainer.appendChild(label);
       });
       
+      // Registra plugin customizado para datalabels
+      Chart.register({
+        id: 'datalabels',
+        afterDatasetsDraw: function(chart) {
+          const ctx = chart.ctx;
+          chart.data.datasets.forEach((dataset, datasetIndex) => {
+            const meta = chart.getDatasetMeta(datasetIndex);
+            meta.data.forEach((point, index) => {
+              const value = dataset.data[index];
+              if (value !== null && value !== undefined) {
+                const x = point.x;
+                const y = point.y;
+                ctx.save();
+                ctx.font = 'bold 8px Arial';
+                ctx.textAlign = 'center';
+                
+                let label = '';
+                let offset = 0;
+                let textBaseline = 'bottom';
+                
+                if (dataset.yAxisID === 'y1') {
+                  // Valor Pago (R$) - etiqueta acima do ponto (cor da linha)
+                  ctx.fillStyle = dataset.borderColor;
+                  label = currencyFormatter.format(value);
+                  offset = -15;
+                  textBaseline = 'bottom';
+                } else {
+                  // Recebido (kWh) - etiqueta abaixo do ponto com "kWh" (cor preta)
+                  ctx.fillStyle = '#000000';
+                  label = numberFormatter.format(value) + ' kWh';
+                  offset = 15;
+                  textBaseline = 'top';
+                }
+                
+                ctx.textBaseline = textBaseline;
+                ctx.fillText(label, x, y + offset);
+                ctx.restore();
+              }
+            });
+          });
+        }
+      });
+
       // Cria gráficos para todos os anos (incluindo o atual)
       setTimeout(() => {
         profiles.forEach(profile => {
@@ -1531,39 +1552,43 @@
           
           anosUnicos.forEach(yearNum => {
             const chartId = `chart-${profile.nome.replace(/\s+/g, '-')}-${yearNum}`;
+            const tableId = `table-${profile.nome.replace(/\s+/g, '-')}-${yearNum}`;
             const canvas = document.getElementById(chartId);
             if (canvas) {
               const monthlyData = getMonthlyDataForYear(profile.registros, yearNum);
               if (monthlyData.meses.length > 0) {
+                // Todos os gráficos mostram apenas Recebido e Valor Pago
+                const datasets = [];
+                
+                // Recebido (kWh) - verde escuro
+                datasets.push({
+                  label: 'Recebido (kWh)',
+                  data: monthlyData.recebido,
+                  borderColor: '#15803d',
+                  backgroundColor: 'rgba(21, 128, 61, 0.2)',
+                  tension: 0.1,
+                  pointRadius: 5,
+                  pointHoverRadius: 7
+                });
+                
+                // Valor Pago (R$) - sempre mostra
+                datasets.push({
+                  label: 'Valor Pago (R$)',
+                  data: monthlyData.valorPago,
+                  borderColor: 'rgb(54, 162, 235)',
+                  backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                  tension: 0.1,
+                  yAxisID: 'y1',
+                  borderWidth: 2,
+                  pointRadius: 5,
+                  pointHoverRadius: 7
+                });
+                
                 new Chart(canvas, {
                   type: 'line',
                   data: {
                     labels: monthlyData.meses,
-                    datasets: [
-                      {
-                        label: 'Contratado (kWh)',
-                        data: monthlyData.contratado,
-                        borderColor: 'rgb(75, 192, 192)',
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        tension: 0.1
-                      },
-                      {
-                        label: 'Recebido (kWh)',
-                        data: monthlyData.recebido,
-                        borderColor: 'rgb(255, 99, 132)',
-                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                        tension: 0.1
-                      },
-                      {
-                        label: 'Valor Pago (R$)',
-                        data: monthlyData.valorPago,
-                        borderColor: 'rgb(54, 162, 235)',
-                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                        tension: 0.1,
-                        yAxisID: 'y1',
-                        borderWidth: 2
-                      }
-                    ]
+                    datasets: datasets
                   },
                   options: {
                     responsive: true,
@@ -1572,6 +1597,23 @@
                       legend: {
                         display: true,
                         position: 'bottom'
+                      },
+                      tooltip: {
+                        enabled: true,
+                        callbacks: {
+                          label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                              label += ': ';
+                            }
+                            if (context.dataset.yAxisID === 'y1') {
+                              label += currencyFormatter.format(context.parsed.y);
+                            } else {
+                              label += numberFormatter.format(context.parsed.y) + ' kWh';
+                            }
+                            return label;
+                          }
+                        }
                       }
                     },
                     scales: {
@@ -1580,13 +1622,10 @@
                         display: true,
                         position: 'left',
                         title: {
-                          display: true,
-                          text: 'kWh',
-                          font: {
-                            size: 12
-                          }
+                          display: false
                         },
                         ticks: {
+                          display: false,
                           callback: function(value) {
                             return numberFormatter.format(value);
                           }
@@ -1597,13 +1636,10 @@
                         display: true,
                         position: 'right',
                         title: {
-                          display: true,
-                          text: 'R$',
-                          font: {
-                            size: 12
-                          }
+                          display: false
                         },
                         ticks: {
+                          display: false,
                           callback: function(value) {
                             return currencyFormatter.format(value);
                           }
@@ -1615,6 +1651,40 @@
                     }
                   }
                 });
+                
+                // Cria tabela com os dados mensais - captura variáveis para usar no setTimeout
+                const tableIdForTable = tableId;
+                const monthlyDataForTable = monthlyData;
+                setTimeout(() => {
+                  const tableContainer = document.getElementById(tableIdForTable);
+                  if (tableContainer) {
+                    if (monthlyDataForTable.meses.length > 0) {
+                      let tableHTML = '<table class="chart-table"><thead><tr><th>Mês</th><th>kWh</th><th>R$</th></tr></thead><tbody>';
+                      monthlyDataForTable.meses.forEach((mes, index) => {
+                        const kwh = monthlyDataForTable.recebido[index] || 0;
+                        const valor = monthlyDataForTable.valorPago[index] || 0;
+                        tableHTML += `<tr><td>${mes}</td><td>${numberFormatter.format(kwh)}</td><td>${currencyFormatter.format(valor)}</td></tr>`;
+                      });
+                      tableHTML += '</tbody></table>';
+                      tableContainer.innerHTML = tableHTML;
+                    }
+                  } else {
+                    // Tenta novamente após mais tempo se não encontrou
+                    setTimeout(() => {
+                      const retryContainer = document.getElementById(tableIdForTable);
+                      if (retryContainer && monthlyDataForTable.meses.length > 0) {
+                        let tableHTML = '<table class="chart-table"><thead><tr><th>Mês</th><th>kWh</th><th>R$</th></tr></thead><tbody>';
+                        monthlyDataForTable.meses.forEach((mes, index) => {
+                          const kwh = monthlyDataForTable.recebido[index] || 0;
+                          const valor = monthlyDataForTable.valorPago[index] || 0;
+                          tableHTML += `<tr><td>${mes}</td><td>${numberFormatter.format(kwh)}</td><td>${currencyFormatter.format(valor)}</td></tr>`;
+                        });
+                        tableHTML += '</tbody></table>';
+                        retryContainer.innerHTML = tableHTML;
+                      }
+                    }, 500);
+                  }
+                }, 500);
               }
             }
           });
@@ -1690,16 +1760,25 @@
     }
 
     function updateDiffCard(summary) {
-      diffValue.textContent = `${summary.totalDiferenca >= 0 ? '+' : ''}${numberFormatter.format(summary.totalDiferenca)} kWh`;
-      diffCard.dataset.state = summary.totalDiferenca >= 0 ? 'positive' : 'negative';
-      diffLegend.textContent = summary.totalDiferenca >= 0
-        ? 'Recebimento acima do contratado nos filtros selecionados.'
-        : 'Recebimento abaixo do contratado nos filtros selecionados.';
+      // Só mostra o card se a diferença for maior que 0
+      if (diffCard) {
+        const diferencaPositiva = Math.max(0, summary.totalDiferenca || 0);
+        if (diferencaPositiva > 0 && summary.totalRecebido > 0) {
+          diffCard.style.display = 'flex';
+          if (diffValue) {
+            diffValue.textContent = `+${numberFormatter.format(diferencaPositiva)} kWh`;
+          }
+          diffCard.dataset.state = 'positive';
+        } else {
+          diffCard.style.display = 'none';
+        }
+      }
     }
 
     function updateYearSummary(data) {
       if (!data || data.length === 0) {
         if (yearSummaryCard) yearSummaryCard.hidden = true;
+        if (diffCard) diffCard.style.display = 'none';
         return;
       }
 
@@ -1721,103 +1800,44 @@
       const mediaValorKwhEdp = data.length > 0 ? somaValorKwhEdp / data.length : 0;
 
       // Atualiza os elementos
-      if (yearContratado) {
-        yearContratado.textContent = numberFormatter.format(somaContratado);
-      }
       if (yearRecebido) {
         yearRecebido.textContent = numberFormatter.format(somaRecebido);
-      }
-      if (yearDiferenca) {
-        yearDiferenca.textContent = `${diferenca >= 0 ? '+' : ''}${numberFormatter.format(diferenca)}`;
-        yearDiferenca.className = `year-summary-item-value ${diferenca >= 0 ? 'positive' : 'negative'}`;
-      }
-      if (yearDiferencaDetail) {
-        yearDiferencaDetail.textContent = diferenca >= 0 
-          ? 'Recebido acima do contratado' 
-          : 'Recebido abaixo do contratado';
-      }
-      if (yearPercentual) {
-        yearPercentual.textContent = `${percentualDiferenca >= 0 ? '+' : ''}${percentualDiferenca.toFixed(2)}%`;
-        yearPercentual.className = `year-summary-item-value ${percentualDiferenca >= 0 ? 'positive' : 'negative'}`;
       }
       if (yearSummaryCard) {
         yearSummaryCard.hidden = false;
       }
+      
+      // Só mostra o card "Recebido acima do contratado" se a diferença for maior que 0
+      if (diffCard) {
+        const diferencaPositiva = Math.max(0, diferenca);
+        if (diferencaPositiva > 0 && somaRecebido > 0) {
+          diffCard.style.display = 'flex';
+          if (diffValue) {
+            diffValue.textContent = `+${numberFormatter.format(diferencaPositiva)} kWh`;
+          }
+          diffCard.setAttribute('data-state', 'positive');
+        } else {
+          diffCard.style.display = 'none';
+        }
+      }
     }
 
     function updateSummaryCards(data) {
-      if (!data || data.length === 0) {
-        if (summaryCardsContainer) summaryCardsContainer.hidden = true;
-        return;
-      }
-
-      // Calcula valores totais do período filtrado
-      const somaMensalidade = data.reduce((sum, item) => sum + (item.valorMensalidade || 0), 0);
-      const somaKwhContratado = data.reduce((sum, item) => sum + (item.kWhDisponibilizadosMes || 0), 0);
-      const somaKwhRecebido = data.reduce((sum, item) => sum + (item.edp_total_kwh || 0), 0);
-      const diferencaKwh = somaKwhRecebido - somaKwhContratado;
-      const percentualDiferenca = somaKwhContratado > 0 ? ((diferencaKwh / somaKwhContratado) * 100) : 0;
-      
-      // Média do valor_kwh_edp do período
-      const somaValorKwhEdp = data.reduce((sum, item) => sum + (item.valor_kwh_edp || 0), 0);
-      const mediaKwhEdp = data.length > 0 ? somaValorKwhEdp / data.length : 0;
-      
-      // Valor Médio kWh = Valor Total Plano / kWh Contratados
-      const valorMedioKwhCalculado = somaKwhContratado > 0 ? somaMensalidade / somaKwhContratado : 0;
-      
-      // % Diferença entre valor médio kWh EDP e valor médio kWh do plano
-      // Fórmula: ((EDP - Plano) / Plano) * 100
-      // Usa os valores calculados diretamente (sem arredondamento intermediário)
-      const comparacaoPercentual = valorMedioKwhCalculado > 0 
-        ? ((mediaKwhEdp - valorMedioKwhCalculado) / valorMedioKwhCalculado) * 100 
-        : 0;
-
-      // Atualiza os elementos
-      if (valorMedioKwh) {
-        valorMedioKwh.textContent = currencyPerKwhFormatter.format(valorMedioKwhCalculado);
-      }
-      if (valorMedioKwhEdpCard) {
-        valorMedioKwhEdpCard.textContent = currencyPerKwhFormatter.format(mediaKwhEdp);
-      }
-      if (comparacaoEdp) {
-        // Calcula o percentual usando os valores arredondados para 2 casas decimais (como exibidos)
-        const valorMedioKwhArredondado = Math.round(valorMedioKwhCalculado * 100) / 100;
-        const mediaKwhEdpArredondada = Math.round(mediaKwhEdp * 100) / 100;
-        const comparacaoPercentualCorrigido = valorMedioKwhArredondado > 0 
-          ? ((mediaKwhEdpArredondada - valorMedioKwhArredondado) / valorMedioKwhArredondado) * 100 
-          : 0;
-        comparacaoEdp.textContent = `${comparacaoPercentualCorrigido >= 0 ? '+' : ''}${comparacaoPercentualCorrigido.toFixed(2)}%`;
-        // Se > 0: verde (EDP mais caro), se <= 0: vermelho (EDP mais barato ou igual)
-        comparacaoEdp.style.color = comparacaoPercentualCorrigido > 0 ? 'var(--positive)' : 'var(--negative)';
-      }
-      if (somaMensalidadeAno) {
-        somaMensalidadeAno.textContent = currencyFormatter.format(somaMensalidade);
-      }
-      if (somaKwhAno) {
-        somaKwhAno.textContent = numberFormatter.format(somaKwhContratado);
-      }
-      if (mediaKwhEdpAno) {
-        mediaKwhEdpAno.textContent = currencyPerKwhFormatter.format(mediaKwhEdp);
-      }
-      if (somaKwhRecebidoAno) {
-        somaKwhRecebidoAno.textContent = numberFormatter.format(somaKwhRecebido);
-      }
-      if (summaryCardsContainer) {
-        summaryCardsContainer.hidden = false;
-      }
+      // Função removida - as caixas "Valor Médio kWh" e "Valores Totais" foram removidas
     }
 
     function updateInsights(summary) {
+      // Ajusta Índice de entrega: se menor que 0, mostra 0%
+      const indiceEntrega = Math.max(0, summary.aderencia || 0);
+      
+      // Ajusta Diferença acumulada: se <= 0, mostra 0
+      const diferencaAcumulada = Math.max(0, summary.totalDiferenca || 0);
+      
       const cards = [
         {
           label: 'Meses analisados',
           value: summary.months,
           detail: summary.months >= 12 ? 'Janela completa de 12 meses' : 'Ainda sem 12 meses completos'
-        },
-        {
-          label: 'Média contratada (kWh)',
-          value: numberFormatter.format(summary.mediaContratada),
-          detail: 'Meta mensal do plano de assinatura'
         },
         {
           label: 'Média recebida (kWh)',
@@ -1826,20 +1846,20 @@
         },
         {
           label: 'Índice de entrega',
-          value: `${summary.aderencia.toFixed(1)}%`,
-          detail: summary.aderencia >= 100 ? 'Plano entregue na totalidade' : 'Ajustar recebimento para 100%'
+          value: `${indiceEntrega.toFixed(1)}%`,
+          detail: indiceEntrega >= 100 ? 'Plano entregue na totalidade' : 'Ajustar recebimento para 100%'
         },
         {
           label: 'Diferença acumulada',
-          value: `${summary.totalDiferenca >= 0 ? '+' : ''}${numberFormatter.format(summary.totalDiferenca)} kWh`,
-          detail: summary.totalDiferenca >= 0 ? 'Excedente recebido' : 'Déficit acumulado'
+          value: `${diferencaAcumulada > 0 ? '+' : ''}${numberFormatter.format(diferencaAcumulada)} kWh`,
+          detail: diferencaAcumulada > 0 ? 'Excedente recebido' : 'Sem excedente'
         },
       ];
 
       insightsGrid.innerHTML = cards.map(card => {
-        // Aplica cor para "Diferença acumulada"
+        // Aplica cor para "Diferença acumulada" - verde se > 0, caso contrário sem cor especial
         const valueStyle = card.label === 'Diferença acumulada' 
-          ? `style="color: ${summary.totalDiferenca > 0 ? 'var(--positive)' : 'var(--negative)'}"`
+          ? `style="color: ${diferencaAcumulada > 0 ? 'var(--positive)' : 'var(--text)'}"`
           : '';
         
         return `
@@ -1854,28 +1874,23 @@
 
     function updateTable(data) {
       tableBody.innerHTML = data.map(item => {
-        // Calcula percent_desc_aplicado: diferença de % entre valor_kwh e valor_kwh_edp
-        const valorKwh = item.valor_kwh || 0;
-        const valorKwhEdp = item.valor_kwh_edp || 0;
-        const percentDescAplicado = valorKwh > 0 ? ((valorKwhEdp - valorKwh) / valorKwh) * 100 : 0;
+        // Calcula diferença: se <= 0, mostra 0; se > 0, mostra em verde com +
+        const diferenca = item.edp_dif_recebidos_x_contratado || 0;
+        const diferencaExibida = diferenca > 0 ? diferenca : 0;
+        const diferencaStyle = diferenca > 0 ? 'style="color: var(--positive)"' : '';
+        const diferencaTexto = diferenca > 0 ? `+${numberFormatter.format(diferencaExibida)} kWh` : '0 kWh';
         
         return `
         <tr>
           <td>${formatMesLabel(item.mes_ano)}</td>
           <td>${item.instalacao}</td>
           <td>${item.nome_beneficiario}</td>
-          <td>${numberFormatter.format(item.kWhDisponibilizadosMes)} kWh</td>
           <td>${numberFormatter.format(item.edp_total_kwh)} kWh</td>
-          <td style="color:${item.edp_dif_recebidos_x_contratado >= 0 ? 'var(--positive)' : 'var(--negative)'}">
-            ${item.edp_dif_recebidos_x_contratado >= 0 ? '+' : ''}${numberFormatter.format(item.edp_dif_recebidos_x_contratado)} kWh
+          <td ${diferencaStyle} style="text-align: center;">
+            ${diferencaTexto}
           </td>
           <td>${currencyFormatter.format(item.valorMensalidade)}</td>
-          <td>${currencyPerKwhFormatter.format(valorKwh)}</td>
-          <td>${currencyPerKwhFormatter.format(valorKwhEdp)}</td>
           <td>${(item.percent_desc_energia || 0)}%</td>
-          <td style="color:${percentDescAplicado >= 0 ? 'var(--positive)' : 'var(--negative)'}">
-            ${percentDescAplicado >= 0 ? '+' : ''}${percentDescAplicado.toFixed(2)}%
-          </td>
         </tr>
       `;
       }).join('');
@@ -1930,23 +1945,11 @@
       };
 
       anos.forEach((ano, indexAno) => {
-        const corIndex = indexAno % coresAnos.contratado.length;
+        const corIndex = indexAno % coresAnos.recebido.length;
         
-        // Linha de kWh contratado para este ano
+        // Linha de kWh recebido para este ano (apenas recebido)
         datasets.push({
-          label: `${ano} - kWh contratado`,
-          data: dadosPorAno[ano].contratado,
-          borderColor: coresAnos.contratado[corIndex],
-          backgroundColor: coresAnos.contratado[corIndex].replace('0.9', '0.2'),
-          tension: 0.35,
-          borderWidth: 3,
-          pointRadius: 4,
-          fill: false
-        });
-        
-        // Linha de kWh recebido para este ano
-        datasets.push({
-          label: `${ano} - kWh recebido`,
+          label: `${ano}`,
           data: dadosPorAno[ano].recebido,
           borderColor: coresAnos.recebido[corIndex],
           backgroundColor: coresAnos.recebido[corIndex].replace('0.9', '0.2'),
@@ -1972,14 +1975,19 @@
           },
           plugins: {
             legend: {
+              display: true,
               labels: {
                 color: '#0f2a24'
               }
             },
             tooltip: {
+              enabled: true,
               callbacks: {
                 label: context => `${context.dataset.label}: ${numberFormatter.format(context.parsed.y)} kWh`
               }
+            },
+            datalabels: {
+              display: false
             }
           },
           scales: {
@@ -2049,23 +2057,11 @@
       const anos = Object.keys(dadosPorAno).sort();
       
       anos.forEach((ano, indexAno) => {
-        const corIndex = indexAno % coresAnos.contratado.length;
+        const corIndex = indexAno % coresAnos.recebido.length;
         
-        // Linha de kWh contratado para este ano
+        // Linha de kWh recebido para este ano (apenas recebido)
         datasets.push({
-          label: `${ano} - kWh contratado`,
-          data: dadosPorAno[ano].contratado,
-          borderColor: coresAnos.contratado[corIndex],
-          backgroundColor: coresAnos.contratado[corIndex].replace('0.9', '0.2'),
-          tension: 0.35,
-          borderWidth: 3,
-          pointRadius: 4,
-          fill: false
-        });
-        
-        // Linha de kWh recebido para este ano
-        datasets.push({
-          label: `${ano} - kWh recebido`,
+          label: `${ano}`,
           data: dadosPorAno[ano].recebido,
           borderColor: coresAnos.recebido[corIndex],
           backgroundColor: coresAnos.recebido[corIndex].replace('0.9', '0.2'),
@@ -2077,6 +2073,17 @@
       });
       
       chart.data.datasets = datasets;
+      // Habilita tooltip, desabilita datalabels, mas mantém legenda
+      if (chart.options.plugins) {
+        chart.options.plugins.tooltip = { 
+          enabled: true,
+          callbacks: {
+            label: context => `${context.dataset.label}: ${numberFormatter.format(context.parsed.y)} kWh`
+          }
+        };
+        chart.options.plugins.legend = { display: true, labels: { color: '#0f2a24' } };
+        chart.options.plugins.datalabels = { display: false };
+      }
       chart.update();
     }
 
@@ -2202,19 +2209,13 @@
           },
           plugins: {
             legend: {
-              labels: {
-                color: '#0f2a24'
-              }
+              display: false
             },
             tooltip: {
-              callbacks: {
-                label: context => {
-                  const value = context.parsed.y;
-                  if (value === null || value === undefined) return '';
-                  const rounded = Math.round(value);
-                  return `${context.dataset.label}: ${numberFormatter.format(rounded)} kWh`;
-                }
-              }
+              enabled: false
+            },
+            datalabels: {
+              display: false
             }
           },
           scales: {
@@ -2284,6 +2285,12 @@
       });
 
       chart.data.datasets = datasets;
+      // Garante que legenda, datalabels e tooltip permaneçam desabilitados
+      if (chart.options.plugins) {
+        chart.options.plugins.legend = { display: false };
+        chart.options.plugins.datalabels = { display: false };
+        chart.options.plugins.tooltip = { enabled: false };
+      }
       chart.update();
     }
 
@@ -2314,17 +2321,18 @@
         }
       });
       
-      const thresholdVerde = 150000; // Limite acima do qual fica verde
-      const thresholdAmarelo = 140000; // Limite abaixo do qual fica vermelho
+      const thresholdVerdeClaro = 150000; // Limite para verde clarinho (150k)
+      const thresholdVerdeForte = 155000; // Limite para verde mais forte (155k)
+      const thresholdAmarelo = 130000; // Limite para amarelo fraco (130k)
       
       // Função para calcular a cor baseada no valor
       function getHeatmapColor(value) {
-        // Valores nulos, muito baixos (como 225.136) ou muito altos (acima de 180 mil) ficam cinza
+        // Valores nulos, muito baixos ou muito altos (acima de 180 mil) ficam cinza
         if (value === null || value === undefined || value < 10000 || value > 180000) {
           return 'rgba(200, 200, 200, 0.3)'; // Cinza para valores inválidos
         }
         
-        // Valores abaixo de 140 mil: gradiente vermelho
+        // Abaixo de 130: vai emvermelhando (vermelho mais forte)
         if (value < thresholdAmarelo) {
           // Gradiente vermelho: quanto menor, mais vermelho
           const normalized = Math.min(1, value / thresholdAmarelo); // 0 a 1 dentro do range vermelho
@@ -2335,31 +2343,45 @@
           return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
         }
         
-        // Valores entre 140 mil e 149 mil: gradiente amarelo
-        if (value < thresholdVerde) {
-          // Normaliza entre 0 e 1 (onde 0 = 140k e 1 = 150k)
-          const normalized = (value - thresholdAmarelo) / (thresholdVerde - thresholdAmarelo);
-          // Interpola entre vermelho (140k) e amarelo (150k)
+        // Entre 130 e 150: amarelo fraco
+        if (value < thresholdVerdeClaro) {
+          // Normaliza entre 0 e 1 (onde 0 = 130k e 1 = 150k)
+          const normalized = (value - thresholdAmarelo) / (thresholdVerdeClaro - thresholdAmarelo);
+          // Interpola entre vermelho (130k) e amarelo fraco (150k)
           // Vermelho: rgba(239, 68, 68, ...)
-          // Amarelo: rgba(255, 200, 0, ...)
+          // Amarelo fraco: rgba(255, 235, 150, ...) - amarelo bem suave
           const red = Math.round(239 + (255 - 239) * normalized); // 239 a 255
-          const green = Math.round(68 + (200 - 68) * normalized); // 68 a 200
-          const blue = Math.round(68 - (68 - 0) * normalized); // 68 a 0
-          const alpha = 0.5 + (0.3 * normalized); // 0.5 a 0.8
+          const green = Math.round(68 + (235 - 68) * normalized); // 68 a 235
+          const blue = Math.round(68 + (150 - 68) * normalized); // 68 a 150
+          const alpha = 0.4 + (0.3 * normalized); // 0.4 a 0.7
           return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
         }
         
-        // Valores acima de 150 mil: gradiente verde
-        // Normaliza o valor entre 0 e 1 (onde 0 = 150k e 1 = 180k)
-        const maxValido = 180000;
-        const normalized = (value - thresholdVerde) / (maxValido - thresholdVerde);
+        // Entre 150 e 155: verde bem clarinho
+        if (value < thresholdVerdeForte) {
+          // Normaliza entre 0 e 1 (onde 0 = 150k e 1 = 155k)
+          const normalized = (value - thresholdVerdeClaro) / (thresholdVerdeForte - thresholdVerdeClaro);
+          // Interpola entre amarelo fraco (150k) e verde clarinho (155k)
+          // Amarelo fraco: rgba(255, 235, 150, ...)
+          // Verde clarinho: rgba(200, 255, 200, ...) - verde bem suave
+          const red = Math.round(255 - (255 - 200) * normalized); // 255 a 200
+          const green = Math.round(235 + (255 - 235) * normalized); // 235 a 255
+          const blue = Math.round(150 + (200 - 150) * normalized); // 150 a 200
+          const alpha = 0.5 + (0.2 * normalized); // 0.5 a 0.7
+          return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
+        }
         
-        // Interpola entre amarelo (150k) e verde (180k)
-        // Amarelo: rgba(255, 200, 0, ...)
-        // Verde: rgba(34, 197, 94, ...)
-        const red = Math.round(255 - (255 - 34) * normalized);
-        const green = Math.round(200 + (197 - 200) * normalized);
-        const blue = Math.round(0 + (94 - 0) * normalized);
+        // Acima de 155: vai esverdeando (verde mais forte)
+        // Normaliza o valor entre 0 e 1 (onde 0 = 155k e 1 = 180k)
+        const maxValido = 180000;
+        const normalized = (value - thresholdVerdeForte) / (maxValido - thresholdVerdeForte);
+        
+        // Interpola entre verde clarinho (155k) e verde forte (180k)
+        // Verde clarinho: rgba(200, 255, 200, ...)
+        // Verde forte: rgba(34, 197, 94, ...)
+        const red = Math.round(200 - (200 - 34) * normalized); // 200 a 34
+        const green = Math.round(255 - (255 - 197) * normalized); // 255 a 197
+        const blue = Math.round(200 - (200 - 94) * normalized); // 200 a 94
         const alpha = 0.6 + (0.4 * normalized); // Mais opaco para valores maiores
         
         return `rgba(${red}, ${green}, ${blue}, ${alpha})`;
@@ -2879,16 +2901,13 @@
     }
 
     function showAwaitingSelection() {
-      diffValue.textContent = '0 kWh';
-      diffCard.dataset.state = 'positive';
-      diffLegend.textContent = 'Selecione um beneficiário ou aplique filtros para visualizar os dados.';
+      if (diffCard) diffCard.style.display = 'none';
       insightsGrid.innerHTML = '';
       tableBody.innerHTML = '';
       tableBody.parentElement.style.display = 'none';
       emptyState.hidden = false;
       emptyState.textContent = 'Selecione um beneficiário ou aplique filtros para visualizar.';
       if (yearSummaryCard) yearSummaryCard.hidden = true;
-      if (summaryCardsContainer) summaryCardsContainer.hidden = true;
       if (energiaChart) {
         updateChart(energiaChart, []);
       }
@@ -2935,14 +2954,12 @@
       populateBenefCheckboxes(benefProfiles);
 
       if (filtered.length === 0) {
-        updateDiffCard({ totalDiferenca: 0 });
-        diffLegend.textContent = 'Sem dados para os filtros aplicados.';
+        updateDiffCard({ totalDiferenca: 0, totalRecebido: 0 });
         insightsGrid.innerHTML = '';
         tableBody.innerHTML = '';
         emptyState.hidden = false;
         emptyState.textContent = 'Nenhum registro encontrado para os filtros selecionados.';
         if (yearSummaryCard) yearSummaryCard.hidden = true;
-        if (summaryCardsContainer) summaryCardsContainer.hidden = true;
         energiaChart && updateChart(energiaChart, []);
         // Seções da usina sempre exibidas (não dependem dos filtros)
         const usinaDataEmpty = loadUsinaData();
