@@ -882,6 +882,12 @@
       background: rgba(15, 155, 156, 0.12);
     }
 
+    /* Oculta a coluna "kWh Recebido a mais do Previsto" quando todos os valores são 0 */
+    table.hide-diferenca-column thead th:nth-child(5),
+    table.hide-diferenca-column tbody td:nth-child(5) {
+      display: none !important;
+    }
+
     .empty-state {
       text-align: center;
       padding: 40px 0;
@@ -1865,7 +1871,7 @@
                       </div>
                       <div class="benef-box-item">
                         <span>% Desc. Energia:</span>
-                        <strong>${profile.percentDescEnergia}%</strong>
+                        <strong>15%</strong>
                       </div>
                     </div>
                   </div>
@@ -1883,30 +1889,6 @@
                         <span>Soma kWh Recebido:</span>
                         <strong>${numberFormatter.format(dadosAno.somaKwhRecebido || 0)}</strong>
                       </div>
-                      <div class="benef-box-item">
-                        <span>Valor Médio kWh:</span>
-                        <strong>${currencyPerKwhFormatter.format(dadosAno.valorMedioKwh || 0)}</strong>
-                      </div>
-                      <div class="benef-box-item">
-                        <span>Média kWh EDP:</span>
-                        <strong>${currencyPerKwhFormatter.format(dadosAno.mediaKwhEdp || 0)}</strong>
-                      </div>
-                      ${diferencaKwhEdp >= 0 && percentualDiferencaKwhEdp >= 0 ? `
-                      <div style="margin-top: 12px; padding: 12px; background: rgba(15, 155, 156, 0.05); border-radius: 8px; border: 1px solid rgba(15, 155, 156, 0.15);">
-                        <div class="benef-box-item">
-                        <span>Diferença:</span>
-                          <strong style="color: var(--text);">
-                            ${currencyPerKwhFormatter.format(diferencaKwhEdp)}
-                          </strong>
-                        </div>
-                        <div class="benef-box-item">
-                          <span>% Desconto Aplicado:</span>
-                          <strong style="color: var(--text);">
-                            ${percentualDiferencaKwhEdp.toFixed(2)}%
-                          </strong>
-                        </div>
-                      </div>
-                      ` : ''}
                     </div>
                     ${diferencaKwhRecebido > 0 ? `
                     <div style="margin-top: 16px; padding: 20px; background: linear-gradient(135deg, rgba(34, 197, 94, 0.15) 0%, rgba(34, 197, 94, 0.08) 100%); border: 2px solid rgba(34, 197, 94, 0.4); border-radius: 12px; text-align: center; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.2);">
@@ -2349,11 +2331,6 @@
           detail: summary.mediaRecebida >= summary.mediaContratada ? 'Acima da meta contratada' : ''
         },
         {
-          label: 'Índice de entrega',
-          value: `${indiceEntrega.toFixed(1)}%`,
-          detail: indiceEntrega >= 100 ? 'Plano entregue na totalidade' : ''
-        },
-        {
           label: 'Diferença acumulada',
           value: `${diferencaAcumulada > 0 ? '+' : ''}${numberFormatter.format(diferencaAcumulada)} kWh`,
           detail: diferencaAcumulada > 0 ? 'Excedente recebido' : 'Sem excedente'
@@ -2377,7 +2354,16 @@
     }
 
     function updateTable(data) {
-      tableBody.innerHTML = data.map(item => {
+      // Filtra os dados: remove linhas onde "kWh Recebido a mais do Previsto" é 0
+      // Esta regra é aplicada APENAS na tabela de dados (grid) da seção 03
+      // Linhas com diferença <= 0 não serão exibidas
+      const dadosFiltrados = data.filter(item => {
+        const diferenca = item.edp_dif_recebidos_x_contratado || 0;
+        // Mantém apenas linhas com diferença > 0 (oculta linhas com 0)
+        return diferenca > 0;
+      });
+      
+      tableBody.innerHTML = dadosFiltrados.map(item => {
         // Calcula diferen�a: se <= 0, mostra 0; se > 0, mostra em verde com +
         const diferenca = item.edp_dif_recebidos_x_contratado || 0;
         const diferencaExibida = diferenca > 0 ? diferenca : 0;
@@ -2394,12 +2380,12 @@
             ${diferencaTexto}
           </td>
           <td>${currencyFormatter.format(item.valorMensalidade)}</td>
-          <td>${(item.percent_desc_energia || 0)}%</td>
+          <td>15%</td>
         </tr>
       `;
       }).join('');
 
-      const hasData = data.length > 0;
+      const hasData = dadosFiltrados.length > 0;
       tableBody.parentElement.style.display = hasData ? 'table' : 'none';
       emptyState.hidden = hasData;
     }
