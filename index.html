@@ -113,6 +113,33 @@
       backdrop-filter: blur(8px);
     }
 
+    .btn-inicio, .btn-topo {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      background: var(--accent);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      font-family: inherit;
+    }
+
+    .btn-inicio:hover, .btn-topo:hover {
+      background: var(--accent-strong);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(15, 155, 156, 0.3);
+    }
+
+    .btn-inicio:active, .btn-topo:active {
+      transform: translateY(0);
+    }
+
     .section-title {
       display: flex;
       align-items: center;
@@ -987,6 +1014,7 @@
       <div class="section-title">
         <span>01</span>
         <div>Filtros inteligentes</div>
+        <button class="btn-inicio" onclick="scrollToTop()" style="margin-left: auto;">🏠 Início</button>
       </div>
       <form id="filters" class="filters-grid">
         <div class="field">
@@ -1084,6 +1112,7 @@
       <div class="section-title">
         <span>02</span>
         <div>Distribuição mensal beneficiário</div>
+        <button class="btn-inicio" onclick="scrollToTop()" style="margin-left: auto;">🏠 Início</button>
       </div>
       <div class="chart-container">
         <canvas id="energiaChart" aria-label="Gráfico contratado vs recebido" role="img"></canvas>
@@ -1094,6 +1123,7 @@
       <div class="section-title">
         <span>03</span>
         <div>Insights-chave Filtro</div>
+        <button class="btn-inicio" onclick="scrollToTop()" style="margin-left: auto;">🏠 Início</button>
       </div>
       <div class="insights-grid" id="insightsGrid">
         <!-- preenchido via JS -->
@@ -1125,6 +1155,7 @@
       <div class="section-title">
         <span>04</span>
         <div>Energia Total Gerada pela Usina</div>
+        <button class="btn-inicio" onclick="scrollToTop()" style="margin-left: auto;">🏠 Início</button>
       </div>
       <div class="chart-container">
         <canvas id="usinaChart" aria-label="Gr�fico energia gerada pela usina" role="img"></canvas>
@@ -1155,6 +1186,7 @@
       <div class="section-title">
         <span>05</span>
         <div>Análise de Performance da Usina</div>
+        <button class="btn-inicio" onclick="scrollToTop()" style="margin-left: auto;">🏠 Início</button>
       </div>
       <div id="usinaPerformanceContainer" style="display: flex; flex-direction: column; gap: 24px;">
         <!-- Análises de performance serão inseridas aqui via JS -->
@@ -1166,6 +1198,7 @@
       <div class="section-title">
         <span>06</span>
         <div>Dashboard Executivo</div>
+        <button class="btn-inicio" onclick="scrollToTop()" style="margin-left: auto;">🏠 Início</button>
       </div>
       <div id="executiveKPIs" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 20px;">
         <!-- KPIs ser�o inseridos aqui via JS -->
@@ -1177,6 +1210,7 @@
       <div class="section-title">
         <span>07</span>
         <div>Contas de Energia EDP</div>
+        <button class="btn-inicio" onclick="scrollToTop()" style="margin-left: auto;">🏠 Início</button>
       </div>
       <div id="contasEdpContainer" style="display: flex; flex-direction: column; gap: 24px; margin-top: 24px;">
         <!-- Cards de beneficiários com PDFs serão inseridos aqui via JS -->
@@ -3848,7 +3882,21 @@
         }
       }, 1500);
     });
+
+    // Função para scroll suave ao topo da página
+    function scrollToTop() {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    }
   </script>
+  
+  <!-- Botão Topo antes do footer -->
+  <div style="text-align: center; padding: 20px 24px;">
+    <button class="btn-topo" onclick="scrollToTop()">⬆️ Topo</button>
+  </div>
+  
   <footer style="text-align: center; padding: 40px 24px 24px;">
     <img src="logo_sisgdsolar.png" alt="SISGDSOLAR - Energia Limpa Inteligente" class="footer-logo">
   </footer>
