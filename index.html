@@ -65,6 +65,21 @@
       height: auto;
     }
 
+    .header-logos-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 32px;
+      margin: 16px auto;
+      flex-wrap: wrap;
+    }
+
+    .header-logos-container img {
+      max-width: 200px;
+      height: auto;
+      display: block;
+    }
+
     .header-metric {
       margin: 12px auto 0 auto;
       max-width: 720px;
@@ -958,7 +973,10 @@
   <header>
     <div class="header-container">
       <h1>Analítica de Energia Contratada vs Recebida</h1>
-      <img src="logo_cooperebr.jpg" alt="COOPEREBR - Energia Verde" class="header-logo">
+      <div class="header-logos-container">
+        <img src="logo_cooperebr.jpg" alt="COOPEREBR - Energia Verde">
+        <img src="cropped-UAINE-GROUP.png" alt="UAINE GROUP">
+      </div>
       <p style="text-align: center; font-size: 1.1rem; font-weight: 600; color: #333; margin-top: 12px; margin-bottom: 0;">PLANO DE ASSINATURA</p>
     </div>
     <p id="instalacoesIndicator" class="header-metric">Instalações monitoradas: 0</p>
