@@ -188,27 +188,6 @@
       overflow-y: auto;
     }
     
-    .apply-filters-btn {
-      margin-top: 10px;
-      padding: 10px 20px;
-      background: var(--accent);
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 500;
-      font-size: 0.95rem;
-      transition: background 0.2s;
-      width: 100%;
-    }
-    
-    .apply-filters-btn:hover {
-      background: #0f9b9c;
-    }
-    
-    .apply-filters-btn:active {
-      background: #0d7d7e;
-    }
 
     .checkbox-filter-container {
       display: flex;
@@ -1019,11 +998,10 @@
     <section>
       <div class="section-title">
         <span>01</span>
-        <div>Filtros inteligentes</div>
         <button class="btn-inicio" onclick="scrollToTop()" style="margin-left: auto;">🏠 Início</button>
       </div>
       <form id="filters" class="filters-grid">
-        <div class="field">
+        <div class="field" style="display: none;">
           <label for="parceiroFilter">Parceiro</label>
           <select id="parceiroFilter">
             <option value="">Todos</option>
@@ -1039,17 +1017,7 @@
             <div class="checkbox-filter-list" id="anoFilterList"></div>
           </div>
         </div>
-        <div class="field">
-          <label>Semestre</label>
-          <div class="checkbox-filter-container" id="semestreFilterContainer">
-            <label class="checkbox-filter-all">
-              <input type="checkbox" id="semestreFilterAll" data-filter="semestre">
-              <span>Todos</span>
-            </label>
-            <div class="checkbox-filter-list" id="semestreFilterList"></div>
-          </div>
-        </div>
-        <div class="field">
+        <div class="field" style="display: none;">
           <label>Mês / Ano</label>
           <div class="checkbox-filter-container" id="mesFilterContainer">
             <label class="checkbox-filter-all">
@@ -1072,9 +1040,7 @@
         <div class="field field-full">
           <label for="benefFilter">Beneficiário</label>
           <div id="benefFilter" class="checkbox-list"></div>
-          <button type="button" id="applyBenefFilters" class="apply-filters-btn">Aplicar Filtros</button>
         </div>
-        <button type="reset">Limpar filtros</button>
       </form>
     </section>
 
@@ -1128,12 +1094,12 @@
     <section>
       <div class="section-title">
         <span>03</span>
-        <div>Insights-chave Filtro</div>
         <button class="btn-inicio" onclick="scrollToTop()" style="margin-left: auto;">🏠 Início</button>
       </div>
       <div class="insights-grid" id="insightsGrid">
         <!-- preenchido via JS -->
       </div>
+      <h3 style="margin-top: 24px; margin-bottom: 16px; font-size: 1.2rem; font-weight: 600; color: var(--text);">kWh Recebido a mais</h3>
       <div class="table-wrapper">
         <table>
           <thead>
@@ -1363,7 +1329,6 @@
     const selectElements = {
       parceiro: document.getElementById('parceiroFilter'),
       ano: { container: document.getElementById('anoFilterContainer'), list: document.getElementById('anoFilterList'), all: document.getElementById('anoFilterAll') },
-      semestre: { container: document.getElementById('semestreFilterContainer'), list: document.getElementById('semestreFilterList'), all: document.getElementById('semestreFilterAll') },
       mes: { container: document.getElementById('mesFilterContainer'), list: document.getElementById('mesFilterList'), all: document.getElementById('mesFilterAll') },
       instalacao: { container: document.getElementById('instalacaoFilterContainer'), list: document.getElementById('instalacaoFilterList'), all: document.getElementById('instalacaoFilterAll') },
       beneficiario: document.getElementById('benefFilter')
@@ -1372,7 +1337,6 @@
     // Sets para armazenar valores selecionados
     const selectedFilters = {
       ano: new Set(),
-      semestre: new Set(),
       mes: new Set(),
       instalacao: new Set()
     };
@@ -1433,7 +1397,6 @@
       const sets = {
         parceiro: new Set(),
         ano: new Set(),
-        semestre: new Set(),
         mes: new Set(),
         instalacao: new Set(),
         beneficiario: new Set()
@@ -1442,7 +1405,6 @@
       data.forEach(item => {
         if (item.parceiro) sets.parceiro.add(item.parceiro);
         sets.ano.add(item.ano);
-        sets.semestre.add(item.semestre);
         sets.mes.add(item.mes_ano);
         sets.instalacao.add(item.instalacao);
         sets.beneficiario.add(item.nome_beneficiario);
@@ -1463,13 +1425,24 @@
       }
 
       populateCheckboxFilter('ano', sets.ano);
-      populateCheckboxFilter('semestre', sets.semestre);
       populateCheckboxFilter('mes', sets.mes, formatMesLabel);
       populateCheckboxFilter('instalacao', sets.instalacao);
 
       const selectedYears = getSelectedYears();
-      benefProfiles = buildBeneficiaryProfiles(data, selectedYears);
-      populateBenefCheckboxes(benefProfiles);
+      // Só popula beneficiários se houver instalações selecionadas
+      if (selectedFilters.instalacao.size > 0) {
+        const selectedInstalacoes = selectedFilters.instalacao;
+        benefProfiles = buildBeneficiaryProfiles(data, selectedYears, selectedInstalacoes);
+        populateBenefCheckboxes(benefProfiles);
+      } else {
+        // Se não houver instalações selecionadas, limpa a lista de beneficiários
+        const benefFilterContainer = selectElements.beneficiario;
+        if (benefFilterContainer) {
+          benefFilterContainer.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 20px;">Selecione pelo menos uma instalação para ver os beneficiários.</p>';
+        }
+        selectedBeneficiarios = new Set();
+        benefProfiles = [];
+      }
       
       const instalacoesIndicator = document.getElementById('instalacoesIndicator');
       if (instalacoesIndicator) {
@@ -1496,10 +1469,22 @@
       if (!filter || !filter.list) return;
       
       filter.list.innerHTML = '';
-      const allValues = Array.from(values).sort();
+      // Converte todos os valores para string e ordena
+      const allValues = Array.from(values).map(v => String(v)).sort();
+      
+      // Limpa o Set para este filtro antes de popular
+      selectedFilters[filterKey].clear();
+      
+      // Para mês e instalação, marca todos inicialmente
+      const shouldStartChecked = ['mes', 'instalacao'].includes(filterKey);
+      
+      // Remove event listeners anteriores para evitar duplicação
+      const newAllCheckbox = filter.all.cloneNode(true);
+      filter.all.parentNode.replaceChild(newAllCheckbox, filter.all);
+      selectElements[filterKey].all = newAllCheckbox;
       
       // Handler para "Selecionar todos"
-      filter.all.addEventListener('change', function() {
+      newAllCheckbox.addEventListener('change', function() {
         const checkboxes = filter.list.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(cb => {
           cb.checked = this.checked;
@@ -1509,6 +1494,12 @@
             selectedFilters[filterKey].delete(cb.value);
           }
         });
+        
+        // Se for o filtro de instalação, atualiza a lista de beneficiários
+        if (filterKey === 'instalacao') {
+          updateBeneficiariosList();
+        }
+        
         refreshDashboard();
       });
       
@@ -1518,21 +1509,44 @@
         item.className = 'checkbox-filter-item';
         const checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
-        checkbox.value = String(value);
+        // value já é string (convertido na linha 1498)
+        checkbox.value = value;
         checkbox.id = `${filterKey}_${value}`;
         checkbox.dataset.filter = filterKey;
         
+        // Marca inicialmente se for mês ou instalação
+        if (shouldStartChecked) {
+          checkbox.checked = true;
+          // Usa o mesmo valor do checkbox para garantir consistência
+          selectedFilters[filterKey].add(value);
+          console.log(`Inicialização ${filterKey}: Adicionado valor`, value, 'Set agora:', Array.from(selectedFilters[filterKey]));
+        }
+        
         checkbox.addEventListener('change', function() {
-          const val = String(value);
+          // Usa o valor do checkbox (já é string) para garantir consistência
+          const val = this.value;
+          console.log(`Checkbox ${filterKey} mudou:`, {
+            valor: val,
+            checked: this.checked,
+            tipo: typeof val
+          });
           if (this.checked) {
             selectedFilters[filterKey].add(val);
+            console.log(`Adicionado ao Set ${filterKey}:`, Array.from(selectedFilters[filterKey]));
           } else {
             selectedFilters[filterKey].delete(val);
-            filter.all.checked = false;
+            console.log(`Removido do Set ${filterKey}:`, Array.from(selectedFilters[filterKey]));
+            newAllCheckbox.checked = false;
           }
           // Atualiza o estado de "Selecionar todos"
           const allChecked = filter.list.querySelectorAll('input[type="checkbox"]:checked').length === allValues.length;
-          filter.all.checked = allChecked;
+          newAllCheckbox.checked = allChecked;
+          
+          // Se for o filtro de instalação, atualiza a lista de beneficiários
+          if (filterKey === 'instalacao') {
+            updateBeneficiariosList();
+          }
+          
           refreshDashboard();
         });
         
@@ -1544,14 +1558,28 @@
         item.appendChild(label);
         filter.list.appendChild(item);
       });
+      
+      // Marca o checkbox "Selecionar todos" se todos estiverem marcados
+      if (shouldStartChecked) {
+        newAllCheckbox.checked = true;
+        console.log(`Inicialização ${filterKey} completa:`, {
+          totalValores: allValues.length,
+          valoresNoSet: selectedFilters[filterKey].size,
+          valores: Array.from(selectedFilters[filterKey])
+        });
+      } else if (filterKey === 'ano') {
+        // Para o filtro de ano, não marca todos inicialmente (será feito depois)
+        console.log(`Inicialização ${filterKey} (será preenchido depois):`, {
+          totalValores: allValues.length,
+          valoresNoSet: selectedFilters[filterKey].size
+        });
+      }
     }
 
     function getSelectedYears() {
       // Se nenhum ano foi selecionado, retorna todos os anos dispon�veis nos dados
       if (selectedFilters.ano.size === 0) {
-        const allYears = new Set();
-        rawData.forEach(item => allYears.add(String(item.ano)));
-        return Array.from(allYears).map(y => parseInt(y)).sort();
+        return [];
       }
       // Retorna os anos selecionados
       return Array.from(selectedFilters.ano).map(y => parseInt(y)).sort();
@@ -1586,12 +1614,20 @@
       };
     }
 
-    function buildBeneficiaryProfiles(data, selectedYears) {
+    function buildBeneficiaryProfiles(data, selectedYears, selectedInstalacoes = null) {
       const map = new Map();
       const anoAtual = new Date().getFullYear();
       
+      // Se há instalações selecionadas, filtra os dados primeiro
+      const dataToProcess = selectedInstalacoes && selectedInstalacoes.size > 0
+        ? data.filter(item => {
+            const itemInstalacao = String(item.instalacao || '');
+            return selectedInstalacoes.has(itemInstalacao);
+          })
+        : data;
+      
       // Agrupa por beneficiário e encontra o último mês de cada um
-      data.forEach(item => {
+      dataToProcess.forEach(item => {
         if (!map.has(item.nome_beneficiario)) {
           map.set(item.nome_beneficiario, {
             nome: item.nome_beneficiario,
@@ -1706,6 +1742,26 @@
       const preview = instalacoes.slice(0, 2).join(', ');
       const remaining = instalacoes.length - 2;
       return `Instalações ${preview}${remaining > 0 ? ` +${remaining}` : ''}`;
+    }
+
+    function updateBeneficiariosList() {
+      // Atualiza a lista de beneficiários baseado nas instalações selecionadas
+      // Se não houver instalações selecionadas, limpa a lista de beneficiários
+      if (selectedFilters.instalacao.size === 0) {
+        // Limpa a lista de beneficiários se não houver instalações selecionadas
+        const benefFilterContainer = selectElements.beneficiario;
+        if (benefFilterContainer) {
+          benefFilterContainer.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 20px;">Selecione pelo menos uma instalação para ver os beneficiários.</p>';
+        }
+        selectedBeneficiarios = new Set();
+        benefProfiles = [];
+        return;
+      }
+      
+      const selectedYears = getSelectedYears();
+      const selectedInstalacoes = selectedFilters.instalacao;
+      benefProfiles = buildBeneficiaryProfiles(rawData, selectedYears, selectedInstalacoes);
+      populateBenefCheckboxes(benefProfiles);
     }
 
     function populateBenefCheckboxes(profiles) {
@@ -1827,7 +1883,21 @@
           <div class="benef-metrics">
             ${(() => {
               const anoAtual = new Date().getFullYear();
-              const todosAnos = [anoAtual, ...Object.keys(profile.anosComDados || {}).map(y => parseInt(y)).sort((a, b) => b - a)];
+              const selectedYears = profile.selectedYears || [];
+              
+              // Se nenhum ano foi selecionado, não mostra nada
+              if (selectedYears.length === 0) {
+                return '';
+              }
+              
+              // Constrói a lista de anos: ano atual + outros anos selecionados
+              const todosAnos = [];
+              if (selectedYears.includes(anoAtual)) {
+                todosAnos.push(anoAtual);
+              }
+              const outrosAnos = Object.keys(profile.anosComDados || {}).map(y => parseInt(y)).filter(y => selectedYears.includes(y)).sort((a, b) => b - a);
+              todosAnos.push(...outrosAnos);
+              
               return todosAnos.map(year => {
                 let dadosAno;
                 if (year === anoAtual) {
@@ -1873,6 +1943,10 @@
                         <span>% Desc. Energia:</span>
                         <strong>15%</strong>
                       </div>
+                      <div class="benef-box-item">
+                        <span>% Participação Usina:</span>
+                        <strong>${((profile.contratadoDistinct || 0) / 150000 * 100).toFixed(2)}%</strong>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -1881,7 +1955,7 @@
                   <div class="benef-year-data-left">
                     <div class="benef-box">
                       <div class="benef-box-title">Valor Médio Total ${year}</div>
-                      <div class="benef-box-item">
+                      <div class="benef-box-item" style="display: none;">
                         <span>Soma Mensalidade:</span>
                         <strong>${currencyFormatter.format(dadosAno.somaMensalidade || 0)}</strong>
                       </div>
@@ -1924,6 +1998,15 @@
         label.appendChild(meta);
         benefFilterContainer.appendChild(label);
       });
+      
+      // Seleciona automaticamente todos os beneficiários após serem populados
+      if (profiles.length > 0) {
+        toggleBenefCheckboxes(true);
+        const allCheckbox = document.getElementById('benef-all');
+        if (allCheckbox) {
+          allCheckbox.checked = true;
+        }
+      }
       
       // Registra plugin customizado para datalabels
       Chart.register({
@@ -1972,8 +2055,20 @@
       setTimeout(() => {
         profiles.forEach(profile => {
           const anoAtual = new Date().getFullYear();
-          // Inclui o ano atual e todos os anos com dados
-          const todosAnos = [anoAtual, ...Object.keys(profile.anosComDados || {}).map(y => parseInt(y))];
+          const selectedYears = profile.selectedYears || [];
+          
+          // Se nenhum ano foi selecionado, não cria gráficos
+          if (selectedYears.length === 0) {
+            return;
+          }
+          
+          // Inclui apenas os anos selecionados
+          const todosAnos = [];
+          if (selectedYears.includes(anoAtual)) {
+            todosAnos.push(anoAtual);
+          }
+          const outrosAnos = Object.keys(profile.anosComDados || {}).map(y => parseInt(y)).filter(y => selectedYears.includes(y));
+          todosAnos.push(...outrosAnos);
           const anosUnicos = [...new Set(todosAnos)];
           
           anosUnicos.forEach(yearNum => {
@@ -2157,26 +2252,78 @@
     }
 
     function getFilters() {
-      return {
+      // Log do estado dos Sets ANTES de criar o objeto filters
+      console.log('getFilters - Estado dos Sets ANTES:', {
+        ano: selectedFilters.ano.size,
+        mes: selectedFilters.mes.size,
+        instalacao: selectedFilters.instalacao.size,
+        valores: {
+          mes: Array.from(selectedFilters.mes),
+          instalacao: Array.from(selectedFilters.instalacao)
+        }
+      });
+      
+      const filters = {
         parceiro: selectElements.parceiro.value,
         ano: selectedFilters.ano,
-        semestre: selectedFilters.semestre,
         mes: selectedFilters.mes,
-        instalacao: selectedFilters.instalacao,
-        beneficiarios: new Set(selectedBeneficiarios)
+        instalacao: selectedFilters.instalacao
       };
+      console.log('getFilters chamado:', {
+        ano: filters.ano.size,
+        mes: filters.mes.size,
+        instalacao: filters.instalacao.size,
+        valores: {
+          ano: Array.from(filters.ano),
+          mes: Array.from(filters.mes),
+          instalacao: Array.from(filters.instalacao)
+        }
+      });
+      return filters;
     }
 
     function applyFilters(data, filters) {
-      return data.filter(item => {
+      // ANO é obrigatório - deve ter pelo menos um item selecionado
+      // MÊS é opcional (filtro oculto) - se não tiver seleção, mostra todos os meses
+      // INSTALAÇÃO é opcional - se não tiver seleção, mostra tudo; se tiver, filtra
+      // BENEFICIÁRIOS são mostrados automaticamente baseado nos outros filtros
+      if (filters.ano.size === 0) {
+        console.log('applyFilters: Filtros obrigatórios sem seleção', {
+          ano: filters.ano.size
+        });
+        return [];
+      }
+      
+      console.log('applyFilters: Filtros aplicados', {
+        ano: Array.from(filters.ano),
+        mes: Array.from(filters.mes),
+        instalacao: Array.from(filters.instalacao)
+      });
+      
+      const filtered = data.filter(item => {
         if (filters.parceiro && item.parceiro !== filters.parceiro) return false;
+        // Filtra por ano (obrigatório)
         if (filters.ano.size && !filters.ano.has(String(item.ano))) return false;
-        if (filters.semestre.size && !filters.semestre.has(item.semestre)) return false;
-        if (filters.mes.size && !filters.mes.has(item.mes_ano)) return false;
-        if (filters.instalacao.size && !filters.instalacao.has(String(item.instalacao))) return false;
-        if (filters.beneficiarios.size && !filters.beneficiarios.has(item.nome_beneficiario)) return false;
+        // Filtra por mês (opcional - se não tiver seleção, mostra todos os meses)
+        if (filters.mes.size > 0) {
+          const itemMes = String(item.mes_ano || '');
+          if (!filters.mes.has(itemMes)) return false;
+        }
+        // Filtra por instalação (opcional - se não tiver seleção, mostra tudo)
+        if (filters.instalacao.size > 0) {
+          const itemInstalacao = String(item.instalacao || '');
+          if (!filters.instalacao.has(itemInstalacao)) return false;
+        }
+        // Beneficiários são mostrados automaticamente baseado nos filtros acima
         return true;
       });
+      
+      console.log('applyFilters: Resultado', {
+        total: data.length,
+        filtrado: filtered.length
+      });
+      
+      return filtered;
     }
 
     function summarize(data) {
@@ -2393,7 +2540,7 @@
     function buildChart(data) {
       const ctx = document.getElementById('energiaChart').getContext('2d');
 
-      // Agrupa dados por ano
+      // Agrupa dados por ano e soma os valores quando há múltiplos beneficiários no mesmo mês
       const dadosPorAno = {};
       data.forEach(item => {
         const date = new Date(`${item.mes_ano}T00:00:00`);
@@ -2407,8 +2554,12 @@
           };
         }
         
-        dadosPorAno[ano].contratado[mes] = item.kWhDisponibilizadosMes;
-        dadosPorAno[ano].recebido[mes] = item.edp_total_kwh;
+        // Soma os valores em vez de sobrescrever (para múltiplos beneficiários no mesmo mês)
+        // Converte null para 0 na soma, mas mantém null se não houver dados
+        const valorContratadoAtual = dadosPorAno[ano].contratado[mes] === null ? 0 : dadosPorAno[ano].contratado[mes];
+        const valorRecebidoAtual = dadosPorAno[ano].recebido[mes] === null ? 0 : dadosPorAno[ano].recebido[mes];
+        dadosPorAno[ano].contratado[mes] = valorContratadoAtual + (item.kWhDisponibilizadosMes || 0);
+        dadosPorAno[ano].recebido[mes] = valorRecebidoAtual + (item.edp_total_kwh || 0);
       });
 
       // Labels dos meses (jan, fev, etc)
@@ -2431,7 +2582,13 @@
       ];
 
       anos.forEach((ano, indexAno) => {
-        const cor = coresAnos[indexAno % coresAnos.length];
+        // Cor específica para 2023: roxa forte
+        let cor;
+        if (parseInt(ano) === 2023) {
+          cor = 'rgba(138, 43, 226, 0.95)'; // Azul-violeta (roxa forte)
+        } else {
+          cor = coresAnos[indexAno % coresAnos.length];
+        }
         
         // Linha de kWh recebido para este ano (apenas recebido)
         datasets.push({
@@ -2498,7 +2655,7 @@
     let energiaChart = null;
 
     function updateChart(chart, data) {
-      // Agrupa dados por ano
+      // Agrupa dados por ano e soma os valores quando há múltiplos beneficiários no mesmo mês
       const dadosPorAno = {};
       data.forEach(item => {
         const date = new Date(`${item.mes_ano}T00:00:00`);
@@ -2512,8 +2669,12 @@
           };
         }
         
-        dadosPorAno[ano].contratado[mes] = item.kWhDisponibilizadosMes;
-        dadosPorAno[ano].recebido[mes] = item.edp_total_kwh;
+        // Soma os valores em vez de sobrescrever (para múltiplos beneficiários no mesmo mês)
+        // Converte null para 0 na soma, mas mantém null se não houver dados
+        const valorContratadoAtual = dadosPorAno[ano].contratado[mes] === null ? 0 : dadosPorAno[ano].contratado[mes];
+        const valorRecebidoAtual = dadosPorAno[ano].recebido[mes] === null ? 0 : dadosPorAno[ano].recebido[mes];
+        dadosPorAno[ano].contratado[mes] = valorContratadoAtual + (item.kWhDisponibilizadosMes || 0);
+        dadosPorAno[ano].recebido[mes] = valorRecebidoAtual + (item.edp_total_kwh || 0);
       });
 
       // Labels dos meses (jan, fev, etc)
@@ -2539,7 +2700,13 @@
       const anos = Object.keys(dadosPorAno).sort();
       
       anos.forEach((ano, indexAno) => {
-        const cor = coresAnos[indexAno % coresAnos.length];
+        // Cor específica para 2023: roxa forte
+        let cor;
+        if (parseInt(ano) === 2023) {
+          cor = 'rgba(138, 43, 226, 0.95)'; // Azul-violeta (roxa forte)
+        } else {
+          cor = coresAnos[indexAno % coresAnos.length];
+        }
         
         // Linha de kWh recebido para este ano (apenas recebido)
         datasets.push({
@@ -2573,7 +2740,6 @@
       return Boolean(
         filters.parceiro ||
         filters.ano.size ||
-        filters.semestre.size ||
         filters.mes.size ||
         filters.instalacao.size ||
         filters.beneficiarios.size
@@ -2691,13 +2857,20 @@
       ];
 
       anos.forEach((ano, indexAno) => {
-        const corIndex = indexAno % coresAnos.length;
+        // Cor específica para 2023: roxa forte
+        let cor;
+        if (parseInt(ano) === 2023) {
+          cor = 'rgba(138, 43, 226, 1)'; // Azul-violeta (roxa forte)
+        } else {
+          const corIndex = indexAno % coresAnos.length;
+          cor = coresAnos[corIndex];
+        }
         
         datasets.push({
-          label: `${ano} - kWh Gerado`,
+          label: `${ano}`,
           data: dadosPorAno[ano],
-          borderColor: coresAnos[corIndex],
-          backgroundColor: coresAnos[corIndex].replace('1)', '0.2)'),
+          borderColor: cor,
+          backgroundColor: cor.replace('1)', '0.2)'),
           tension: 0.35,
           borderWidth: 3,
           pointRadius: 4,
@@ -2720,10 +2893,23 @@
           },
           plugins: {
             legend: {
-              display: false
+              display: true,
+              position: 'top',
+              labels: {
+                color: '#0f2a24',
+                font: {
+                  size: 12,
+                  weight: '600'
+                },
+                padding: 15,
+                usePointStyle: true
+              }
             },
             tooltip: {
-              enabled: false
+              enabled: true,
+              callbacks: {
+                label: context => `${context.dataset.label}: ${formatKwh(context.parsed.y)}`
+              }
             },
             datalabels: {
               display: false
@@ -2782,12 +2968,20 @@
       ];
 
       const datasets = anos.map((ano, indexAno) => {
-        const corIndex = indexAno % coresAnos.length;
+        // Cor específica para 2023: roxa forte
+        let cor;
+        if (parseInt(ano) === 2023) {
+          cor = 'rgba(138, 43, 226, 1)'; // Azul-violeta (roxa forte)
+        } else {
+          const corIndex = indexAno % coresAnos.length;
+          cor = coresAnos[corIndex];
+        }
+        
         return {
-          label: `${ano} - kWh Gerado`,
+          label: `${ano}`,
           data: dadosPorAno[ano],
-          borderColor: coresAnos[corIndex],
-          backgroundColor: coresAnos[corIndex].replace('1)', '0.2)'),
+          borderColor: cor,
+          backgroundColor: cor.replace('1)', '0.2)'),
           tension: 0.35,
           borderWidth: 3,
           pointRadius: 4,
@@ -2798,9 +2992,26 @@
       chart.data.datasets = datasets;
       // Garante que legenda, datalabels e tooltip permane�am desabilitados
       if (chart.options.plugins) {
-        chart.options.plugins.legend = { display: false };
+        chart.options.plugins.legend = {
+          display: true,
+          position: 'top',
+          labels: {
+            color: '#0f2a24',
+            font: {
+              size: 12,
+              weight: '600'
+            },
+            padding: 15,
+            usePointStyle: true
+          }
+        };
         chart.options.plugins.datalabels = { display: false };
-        chart.options.plugins.tooltip = { enabled: false };
+        chart.options.plugins.tooltip = {
+          enabled: true,
+          callbacks: {
+            label: context => `${context.dataset.label}: ${formatKwh(context.parsed.y)}`
+          }
+        };
       }
       chart.update();
     }
@@ -3464,8 +3675,20 @@
       // Reconstr�i os perfis de benefici�rios com TODOS os dados (n�o apenas os filtrados)
       // para que a lista de benefici�rios mostre todas as op��es dispon�veis
       const selectedYears = getSelectedYears();
-      benefProfiles = buildBeneficiaryProfiles(rawData, selectedYears);
-      populateBenefCheckboxes(benefProfiles);
+      // Só popula beneficiários se houver instalações selecionadas
+      if (selectedFilters.instalacao.size > 0) {
+        const selectedInstalacoes = selectedFilters.instalacao;
+        benefProfiles = buildBeneficiaryProfiles(rawData, selectedYears, selectedInstalacoes);
+        populateBenefCheckboxes(benefProfiles);
+      } else {
+        // Se não houver instalações selecionadas, limpa a lista de beneficiários
+        const benefFilterContainer = selectElements.beneficiario;
+        if (benefFilterContainer) {
+          benefFilterContainer.innerHTML = '<p style="text-align: center; color: var(--muted); padding: 20px;">Selecione pelo menos uma instalação para ver os beneficiários.</p>';
+        }
+        selectedBeneficiarios = new Set();
+        benefProfiles = [];
+      }
 
       if (filtered.length === 0) {
         updateDiffCard({ totalDiferenca: 0, totalRecebido: 0 });
@@ -3525,8 +3748,19 @@
       emptyState.hidden = true;
     }
 
-      // Popula filtros (parceiro, ano, semestre, mês, instalação, beneficiário)
+      // Popula filtros (parceiro, ano, mês, instalação, beneficiário)
       populateFilters(rawData);
+      
+      // Log para verificar estado dos Sets após populateFilters
+      console.log('Após populateFilters:', {
+        ano: selectedFilters.ano.size,
+        mes: selectedFilters.mes.size,
+        instalacao: selectedFilters.instalacao.size,
+        valores: {
+          mes: Array.from(selectedFilters.mes),
+          instalacao: Array.from(selectedFilters.instalacao)
+        }
+      });
 
       // Seleciona automaticamente todos os anos na primeira carga
       const anoFilter = selectElements.ano;
@@ -3539,21 +3773,14 @@
         if (anoFilter.all) {
           anoFilter.all.checked = true;
         }
+        console.log('Anos inicializados:', Array.from(selectedFilters.ano));
       }
 
-      // Seleciona automaticamente todos os beneficiários na primeira carga
-      toggleBenefCheckboxes(true);
-
       // Carrega o dashboard já com os filtros aplicados
+      // Os beneficiários serão selecionados automaticamente em populateBenefCheckboxes
       refreshDashboard();
       
       // Adiciona event listener ao bot�o "Aplicar Filtros"
-      const applyBenefFiltersBtn = document.getElementById('applyBenefFilters');
-      if (applyBenefFiltersBtn) {
-        applyBenefFiltersBtn.addEventListener('click', () => {
-          refreshDashboard();
-        });
-      }
       
       // Inicializa o gr�fico da usina (sempre exibido, independente dos filtros)
       const usinaData = loadUsinaData();
@@ -3565,24 +3792,12 @@
       // Atualiza dashboard executivo
       buildExecutiveDashboard(rawData, usinaData);
 
-      filtersForm.addEventListener('input', refreshDashboard);
-      filtersForm.addEventListener('change', refreshDashboard);
-      filtersForm.addEventListener('reset', () => {
-        setTimeout(() => {
-          // Limpa os checkboxes dos filtros
-          Object.keys(selectedFilters).forEach(key => {
-            selectedFilters[key].clear();
-            const filter = selectElements[key];
-            if (filter && filter.all) {
-              filter.all.checked = false;
-              const checkboxes = filter.list.querySelectorAll('input[type="checkbox"]');
-              checkboxes.forEach(cb => cb.checked = false);
-            }
-          });
-          resetBenefCheckboxes();
-          refreshDashboard();
-        }, 0);
-      });
+      // Adiciona event listeners APÓS a inicialização dos filtros
+      // Usa setTimeout para garantir que os valores já foram adicionados aos Sets
+      setTimeout(() => {
+        filtersForm.addEventListener('input', refreshDashboard);
+        filtersForm.addEventListener('change', refreshDashboard);
+      }, 100);
     }
 
     // ============================================
@@ -3888,4 +4103,3 @@
   </footer>
 </body>
 </html>
-
